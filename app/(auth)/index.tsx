@@ -1,41 +1,40 @@
-// 🎯 ARCHIVO: app/(auth)/index.tsx (CON IMÁGENES REALES)
+// 🎯 ARCHIVO: app/(auth)/index.tsx (MODIFICANDO EL BOTÓN USUARIO)
 
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Image, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 
 export default function RoleSelectionScreen() {
+  const router = useRouter();
+
   const handleSelectRole = (role: string) => {
-    console.log(`Rol seleccionado para registrar: ${role}`);
+    if (role === 'trabajador') {
+      router.push('/(auth)/(worker-register)/step1');
+    } else if (role === 'usuario') {
+      // --- ¡NUEVA NAVEGACIÓN AÑADIDA! ---
+      router.push('/(auth)/(user-register)/step1');
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mainContent}>
         <Text style={styles.headerTitle}>Registro</Text>
-
-        {/* --- IMAGEN 1: LOGO SUPERIOR --- */}
         <Image source={require('../../assets/images/logo.jpeg')} style={styles.logo} />
-
         <View style={styles.selectionContainer}>
           <TouchableOpacity style={styles.card} onPress={() => handleSelectRole('trabajador')}>
-            {/* --- IMAGEN 2: AVATAR TRABAJADOR --- */}
             <Image source={require('../../assets/images/worker.jpeg')} style={styles.cardImage} />
             <Text style={styles.cardText}>Trabajador</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.card} onPress={() => handleSelectRole('usuario')}>
-            {/* --- IMAGEN 3: AVATAR USUARIO --- */}
-            {/* Usando map.jpeg como ejemplo, cámbialo si tienes una imagen específica para el usuario */}
             <Image source={require('../../assets/images/user.jpeg')} style={styles.cardImage} />
             <Text style={styles.cardText}>Usuario</Text>
           </TouchableOpacity>
         </View>
-
         <Text style={styles.instructionText}>
           Selecciona el tipo de cuenta con el que quieres registrarte.
         </Text>
       </View>
-      
       <View style={styles.footer}>
         <Text style={styles.footerText}>
           ¿Ya tienes una cuenta?{' '}
@@ -48,6 +47,7 @@ export default function RoleSelectionScreen() {
   );
 }
 
+// ... (los estilos no cambian)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F7F8FA' },
   mainContent: { flex: 1, alignItems: 'center', paddingTop: 60, paddingHorizontal: 20, justifyContent: 'center' },
