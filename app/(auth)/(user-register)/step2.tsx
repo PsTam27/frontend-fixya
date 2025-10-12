@@ -19,10 +19,13 @@ export default function UserRegisterStep2() {
   };
 
   const handleCreateAccount = () => {
+    console.log('Botón "Crea tu cuenta" presionado!'); 
     console.log('Servicios:', selectedServices, 'Tipo de hogar:', selectedHomeType);
     // Lógica para enviar datos al backend...
     router.push('/(auth)/(user-register)/success');
   };
+
+  
 
   return (
     <SafeAreaView style={styles.container}>

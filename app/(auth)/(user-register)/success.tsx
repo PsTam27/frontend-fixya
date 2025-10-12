@@ -1,4 +1,4 @@
-// 🎯 ARCHIVO: app/(auth)/(user-register)/success.tsx
+// 🎯 ARCHIVO: app/(auth)/(user-register)/success.tsx (CON NAVEGACIÓN CORREGIDA)
 
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Image } from 'react-native';
@@ -8,21 +8,18 @@ export default function UserRegisterSuccess() {
   const router = useRouter();
 
   const handleGoToHome = () => {
-    // Te saca del flujo de registro y te lleva a la pantalla de inicio del onboarding.
-    router.replace('/'); 
+    // --- ¡CAMBIO CLAVE! ---
+    // Ahora te lleva a la pantalla principal con la barra de pestañas.
+    router.replace('/(tabs)'); 
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mainContent}>
-        {/* Texto específico para el usuario */}
         <Text style={styles.title}>¡Felicidades! ya eres parte de nuestra aplicación!</Text>
         
-        {/* Logo de FIXYA */}
-        {/* La ruta correcta desde esta carpeta es ../../../ */}
         <Image source={require('../../../assets/images/logo.jpeg')} style={styles.logo} />
 
-        {/* Texto específico para el usuario */}
         <Text style={styles.subtitle}>
           Recuerda completar tu perfil de usuario y leer nuestra políticas de servicio.
         </Text>
