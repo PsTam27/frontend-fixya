@@ -19,12 +19,12 @@ export default function WorkerRegisterStep2() {
     );
   };
 
-  // --- ¡ESTA ES LA FUNCIÓN CLAVE! ---
   const handleCreateAccount = () => {
+    console.log('Botón "Crea tu cuenta" de TRABAJADOR presionado!');
     console.log('Especialidades seleccionadas:', selectedSpecialities);
-    // Lógica para enviar los datos al backend...
+    // En el futuro, aquí se envían los datos al backend.
 
-    // Después de la lógica, esta línea navega a la pantalla de éxito.
+    // Navegamos a la pantalla de éxito de este mismo flujo.
     router.push('/(auth)/(worker-register)/success');
   };
 
@@ -33,7 +33,6 @@ export default function WorkerRegisterStep2() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.headerTitle}>Registro</Text>
         <Text style={styles.subtitle}>Selecciona tus certificaciones y/o especialidades</Text>
-
         <View style={styles.specialityList}>
           {specialities.map(spec => (
             <TouchableOpacity 
@@ -48,13 +47,10 @@ export default function WorkerRegisterStep2() {
             </TouchableOpacity>
           ))}
         </View>
-
         <TouchableOpacity style={styles.attachButton}>
             <Text style={styles.attachButtonText}>Adjunta acá tus certificados</Text>
             <Text style={styles.attachButtonIcon}>+</Text>
         </TouchableOpacity>
-
-        {/* Este botón llama a la función handleCreateAccount */}
         <TouchableOpacity style={styles.button} onPress={handleCreateAccount}>
           <Text style={styles.buttonText}>Crea tu cuenta</Text>
         </TouchableOpacity>
