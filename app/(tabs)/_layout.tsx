@@ -68,6 +68,13 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => <TabIcon iconName="person-outline" name="Perfil" focused={focused} />,
         }}
       />
+
+       <Tabs.Screen
+        name="buscar-maestros"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

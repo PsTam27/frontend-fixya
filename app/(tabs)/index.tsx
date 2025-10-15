@@ -47,29 +47,32 @@ export default function HomeScreen() {
           placeholderTextColor="#999"
         />
 
-        {/* Cards */}
-        <Card
+         <Card
           title="Arreglos"
           description="Necesitas arreglar un enchufe? o tu refrigerador no está funcionando correctamente?"
           buttonText="Ver maestros"
+          // --- ¡CAMBIO CLAVE! Añadimos el onPress ---
+          onPress={() => router.push('/(tabs)/buscar-maestros')}
         />
         <Card
           title="Urgencias"
           description="Contacta con un maestro disponible ahora mismo o agenda para la fecha más cercana"
           buttonText="Ver maestros"
+          // Podrías hacer que este botón lleve a la misma pantalla pero con un filtro diferente
+          onPress={() => router.push({ pathname: '/(tabs)/buscar-maestros', params: { category: 'urgencias' }})}
         />
         <Card
           title="Remodelaciones"
           description="Consulta nuestro creador de presupuestos para trabajos más extensos"
           buttonText="Ir a formulario"
           isFormButton={true}
-          // La lógica de navegación que acabamos de agregar
           onPress={() => router.push('/remodelaciones-form')}
         />
       </ScrollView>
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F7F8FA' },

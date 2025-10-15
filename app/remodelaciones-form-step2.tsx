@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   imagePickerContainer: {
     flexDirection: 'row',
     gap: 10,
-  }, // <-- ¡AQUÍ ESTÁ LA COMA QUE FALTABA!
+  }, 
   imagePickerBox: {
     width: 80,
     height: 80,
