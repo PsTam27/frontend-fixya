@@ -8,8 +8,7 @@ export default function UserRegisterSuccess() {
   const router = useRouter();
 
   const handleGoToHome = () => {
-    // --- ¡CAMBIO CLAVE! ---
-    // Ahora te lleva a la pantalla principal con la barra de pestañas.
+
     router.replace('/(tabs)'); 
   };
 
