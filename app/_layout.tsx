@@ -5,11 +5,37 @@ import React from 'react';
 
 export default function RootLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />      {/* El Onboarding */}
-      <Stack.Screen name="(auth)" />     {/* La sección de Registro/Login */}
-      <Stack.Screen name="(tabs)" />     {/* La sección del Usuario */}
-      <Stack.Screen name="(maestro)" />  {/* La sección del Maestro */}
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(maestro)" options={{ headerShown: false }} />
+      <Stack.Screen 
+        name="remodelaciones-form" 
+        options={{
+          headerShown: true,
+          title: 'Formulario de remodelaciones',
+          presentation: 'modal',
+        }} 
+      />
+      
+      {/* --- AÑADE ESTA PANTALLA --- */}
+      <Stack.Screen 
+        name="remodelaciones-form-step2" 
+        options={{
+          headerShown: true,
+          title: 'Formulario de remodelaciones',
+        }} 
+      />
+
+      <Stack.Screen 
+        name="solicitud-enviada" 
+        options={{
+          headerShown: false, // No queremos barra de título en el modal
+          presentation: 'transparentModal', // ¡Esta es la magia!
+          animation: 'fade', // Una animación sutil
+        }} 
+      />
     </Stack>
   );
 }

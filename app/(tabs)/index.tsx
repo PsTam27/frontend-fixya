@@ -1,18 +1,19 @@
-// 🎯 ARCHIVO: app/(tabs)/index.tsx (CON CORRECCIÓN DE CONSTANTES)
+// 🎯 ARCHIVO: app/(tabs)/index.tsx (VERSIÓN COMPLETA Y FUNCIONAL)
 
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
+  const router = useRouter();
 
-  // --- ¡CAMBIO CLAVE! Movemos el componente Card aquí adentro ---
-  // Ahora, cuando se define Card, el objeto 'styles' de abajo ya es accesible.
-  const Card = ({ title, description, buttonText, isFormButton = false }: { title: string, description: string, buttonText: string, isFormButton?: boolean }) => {
+  // --- El componente Card se define aquí adentro para que tenga acceso a los 'styles' ---
+  const Card = ({ title, description, buttonText, isFormButton = false, onPress }: any) => {
     return (
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{title}</Text>
         <Text style={styles.cardDescription}>{description}</Text>
-        <TouchableOpacity style={[styles.cardButton, isFormButton && styles.formButton]}>
+        <TouchableOpacity style={[styles.cardButton, isFormButton && styles.formButton]} onPress={onPress}>
           <Text style={[styles.cardButtonText, isFormButton && styles.formButtonText]}>{buttonText}</Text>
         </TouchableOpacity>
       </View>
@@ -25,8 +26,7 @@ export default function HomeScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.userInfo}>
-            {/* --- CORRECCIÓN DE RUTA DE IMAGEN --- */}
-            {/* Desde app/(tabs)/index.tsx, la ruta correcta es ../../ */}
+            {/* Usamos la ruta correcta desde esta carpeta (app/tabs) */}
             <Image source={require('../../assets/images/map.jpeg')} style={styles.avatar} />
             <Text style={styles.greeting}>Bienvenido, <Text style={{ color: '#3498DB' }}>Nicolas</Text></Text>
           </View>
@@ -63,6 +63,8 @@ export default function HomeScreen() {
           description="Consulta nuestro creador de presupuestos para trabajos más extensos"
           buttonText="Ir a formulario"
           isFormButton={true}
+          // La lógica de navegación que acabamos de agregar
+          onPress={() => router.push('/remodelaciones-form')}
         />
       </ScrollView>
     </SafeAreaView>
