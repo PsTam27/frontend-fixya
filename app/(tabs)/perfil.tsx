@@ -1,8 +1,9 @@
-// 🎯 ARCHIVO: app/(tabs)/perfil.tsx
+
 
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Usaremos Ionicons para los íconos
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 // --- Componente Reutilizable para cada opción del menú ---
 const ListItem = ({ icon, text, onPress }: { icon: any; text: string; onPress?: () => void }) => {
@@ -27,16 +28,22 @@ const menuOptions = [
 ];
 
 export default function PerfilScreen() {
+  const router = useRouter(); 
+  
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* --- Header del Perfil --- */}
         <View style={styles.header}>
+          {/* Corregí la ruta de la imagen a ../ */}
           <Image source={require('../../assets/images/map.jpeg')} style={styles.avatar} />
           <View>
             <Text style={styles.name}>Nicolas Henandez</Text>
           </View>
-          <TouchableOpacity>
+          
+          {/* --- ¡AQUÍ ESTÁ EL CAMBIO! --- */}
+          {/* Añadimos el onPress al TouchableOpacity para que navegue */}
+          <TouchableOpacity onPress={() => router.push('/(tabs)/informacion-personal')}>
             <Ionicons name="create-outline" size={24} color="#3498DB" />
           </TouchableOpacity>
         </View>
@@ -67,7 +74,6 @@ export default function PerfilScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F7F8FA' },
   scrollContent: { paddingHorizontal: 20, paddingTop: 20 },
-  // Estilos del Header
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -84,7 +90,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#2C3E50',
   },
-  // Estilos de la Tarjeta de Estadísticas
   statsCard: {
     backgroundColor: 'white',
     borderRadius: 15,
@@ -106,11 +111,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#7F8C8D',
   },
-  // Estilos del Menú
   menuContainer: {
     backgroundColor: 'white',
     borderRadius: 15,
-    overflow: 'hidden', // Para que el borde de las listas se ajuste al radio
+    overflow: 'hidden',
   },
   listItem: {
     flexDirection: 'row',

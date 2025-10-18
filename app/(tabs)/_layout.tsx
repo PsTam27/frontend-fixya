@@ -75,6 +75,21 @@ export default function TabLayout() {
           href: null,
         }}
       />
+
+      <Tabs.Screen
+        name="editar-solicitud"
+        options={{
+          href: null, // This hides it from the tab bar
+        }}
+      />
+      
+      <Tabs.Screen
+        name="informacion-personal"
+        options={{
+          href: null, // Esto la oculta de la barra de pestañas
+        }}
+      />
+      
     </Tabs>
   );
 }

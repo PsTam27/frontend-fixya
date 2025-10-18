@@ -1,4 +1,4 @@
-// 🎯 ARCHIVO: app/(tabs)/index.tsx (VERSIÓN COMPLETA Y FUNCIONAL)
+// 🎯 ARCHIVO: app/(tabs)/index.tsx (CON "VER TODOS" FUNCIONAL)
 
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native';
@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 export default function HomeScreen() {
   const router = useRouter();
 
-  // --- El componente Card se define aquí adentro para que tenga acceso a los 'styles' ---
+  // Componente Card reutilizable
   const Card = ({ title, description, buttonText, isFormButton = false, onPress }: any) => {
     return (
       <View style={styles.card}>
@@ -26,7 +26,6 @@ export default function HomeScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.userInfo}>
-            {/* Usamos la ruta correcta desde esta carpeta (app/tabs) */}
             <Image source={require('../../assets/images/map.jpeg')} style={styles.avatar} />
             <Text style={styles.greeting}>Bienvenido, <Text style={{ color: '#3498DB' }}>Nicolas</Text></Text>
           </View>
@@ -39,7 +38,9 @@ export default function HomeScreen() {
         {/* Title and Search */}
         <View style={styles.searchSection}>
             <Text style={styles.sectionTitle}>Qué necesitas hoy?</Text>
-            <TouchableOpacity><Text style={styles.seeAll}>Ver todos</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/buscar-maestros')}>
+              <Text style={styles.seeAll}>Ver todos</Text>
+            </TouchableOpacity>
         </View>
         <TextInput
           style={styles.searchInput}
@@ -47,19 +48,18 @@ export default function HomeScreen() {
           placeholderTextColor="#999"
         />
 
-         <Card
+        {/* Cards */}
+        <Card
           title="Arreglos"
           description="Necesitas arreglar un enchufe? o tu refrigerador no está funcionando correctamente?"
           buttonText="Ver maestros"
-          // --- ¡CAMBIO CLAVE! Añadimos el onPress ---
-          onPress={() => router.push('/(tabs)/buscar-maestros')}
+          onPress={() => router.push('/buscar-maestros')}
         />
         <Card
           title="Urgencias"
           description="Contacta con un maestro disponible ahora mismo o agenda para la fecha más cercana"
           buttonText="Ver maestros"
-          // Podrías hacer que este botón lleve a la misma pantalla pero con un filtro diferente
-          onPress={() => router.push({ pathname: '/(tabs)/buscar-maestros', params: { category: 'urgencias' }})}
+          onPress={() => router.push('/buscar-maestros')}
         />
         <Card
           title="Remodelaciones"
@@ -72,7 +72,6 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F7F8FA' },

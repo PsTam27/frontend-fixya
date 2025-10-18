@@ -36,6 +36,35 @@ export default function RootLayout() {
           animation: 'fade', // Una animación sutil
         }} 
       />
+
+      <Stack.Screen 
+        name="buscar-maestros" 
+        options={{
+          headerShown: true,
+          title: 'Buscar maestros',
+        }} 
+      />
+
+      <Stack.Screen 
+        name="maestro-profile" 
+        options={{
+          headerShown: true, // Show the top bar with the back arrow
+          title: 'Perfil de maestro', // Set the title
+        }} 
+      />
+
+      <Stack.Screen 
+        name="cancelar-solicitud-modal" 
+        options={{
+          headerShown: false,
+          presentation: 'transparentModal',
+          animation: 'fade',
+        }} 
+      />
+
+
     </Stack>
+
+    
   );
 }

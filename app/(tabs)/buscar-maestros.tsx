@@ -1,9 +1,9 @@
-// 🎯 ARCHIVO: app/(tabs)/buscar-maestros.tsx
+// 🎯 ARCHIVO: app/buscar-maestros.tsx (VERSIÓN CORREGIDA Y COMPLETA)
 
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 
 // Datos de ejemplo para la lista de maestros
 const maestros = [
@@ -13,7 +13,7 @@ const maestros = [
     specialty: 'Pintor especialista',
     rating: 4.5,
     availability: 'Lunes a Viernes de 08:00 AM a 18:00 PM',
-    avatar: require('../../assets/images/map.jpeg'), // Reemplaza con el avatar correcto
+    avatar: require('../../assets/images/user.jpeg'),
   },
   {
     id: '2',
@@ -21,12 +21,22 @@ const maestros = [
     specialty: 'Pintor enfocado en interiores',
     rating: 5.0,
     availability: 'Lunes a Miercoles de 08:00 AM a 18:00 PM',
-    avatar: require('../../assets/images/maestros.jpeg'), // Reemplaza con el avatar correcto
+
+    avatar: require('../../assets/images/user.jpeg'),
   },
 ];
 
-// Componente reutilizable para cada tarjeta de maestro
+
 const MaestroCard = ({ maestro }: { maestro: typeof maestros[0] }) => {
+  const router = useRouter();
+
+  const handlePress = () => {
+    router.push({
+      pathname: '/maestro-profile',
+      params: { maestroId: maestro.id }
+    });
+  };
+
   return (
     <View style={styles.maestroCard}>
       <View style={styles.cardHeader}>
@@ -44,7 +54,7 @@ const MaestroCard = ({ maestro }: { maestro: typeof maestros[0] }) => {
         <Text style={styles.availabilityTitle}>Disponibilidad</Text>
         <Text style={styles.availabilityText}>{maestro.availability}</Text>
       </View>
-      <TouchableOpacity style={styles.profileButton}>
+      <TouchableOpacity style={styles.profileButton} onPress={handlePress}>
         <Text style={styles.profileButtonText}>Ver perfil</Text>
       </TouchableOpacity>
     </View>
@@ -54,7 +64,6 @@ const MaestroCard = ({ maestro }: { maestro: typeof maestros[0] }) => {
 export default function BuscarMaestrosScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      {/* Usamos Stack.Screen para configurar el header de esta pantalla específica */}
       <Stack.Screen options={{ headerShown: true, title: 'Buscar maestros' }} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.searchContainer}>

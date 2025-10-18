@@ -1,10 +1,11 @@
-// 🎯 ARCHIVO: app/(tabs)/solicitudes.tsx
+// 🎯 ARCHIVO: app/(tabs)/solicitudes.tsx (CON BOTONES FUNCIONALES)
 
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router'; 
 
-// Datos de ejemplo para la lista. En el futuro, vendrán de tu backend.
+// Datos de ejemplo
 const activeRequests = [
   {
     id: '1',
@@ -17,13 +18,13 @@ const activeRequests = [
 ];
 
 export default function SolicitudesScreen() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('Pendientes');
   const tabs = ['Pendientes', 'En curso', 'Historial'];
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
         <Text style={styles.headerTitle}>Solicitudes</Text>
 
         {/* Pestañas de filtro */}
@@ -49,13 +50,11 @@ export default function SolicitudesScreen() {
           />
         </View>
 
-        {/* Lista de Solicitudes */}
         <View style={styles.listHeader}>
           <Text style={styles.listTitle}>1 Solicitud activa</Text>
           <Text style={styles.listStatus}>En progreso ▼</Text>
         </View>
 
-        {/* Mapeamos las solicitudes activas para mostrarlas */}
         {activeRequests.map(request => (
           <View key={request.id} style={styles.requestCard}>
             <View style={styles.cardHeader}>
@@ -68,10 +67,25 @@ export default function SolicitudesScreen() {
               {' '}{request.location}, <Text style={{color: '#3498DB'}}>{request.distance}</Text>
             </Text>
             <View style={styles.cardButtons}>
-              <TouchableOpacity style={[styles.button, styles.buttonOutline]}>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonOutline]}
+                onPress={() => router.push({
+                  pathname: '/(tabs)/editar-solicitud',
+                  params: { requestId: request.id }
+                })}
+              >
                 <Text style={[styles.buttonText, styles.buttonTextOutline]}>Editar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, styles.buttonSolid]}>
+              
+              {/* --- ¡AQUÍ ESTÁ LA CORRECCIÓN! --- */}
+              <TouchableOpacity
+                style={[styles.button, styles.buttonSolid]}
+                // Añadimos la propiedad onPress para abrir el modal de cancelación
+                onPress={() => router.push({
+                  pathname: '/cancelar-solicitud-modal', // La ruta al modal
+                  params: { requestId: request.id } // Pasamos el ID de la solicitud
+                })}
+              >
                 <Text style={styles.buttonText}>Cancelar solicitud</Text>
               </TouchableOpacity>
             </View>
@@ -182,7 +196,7 @@ const styles = StyleSheet.create({
   cardButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 10, // Espacio entre los botones
+    gap: 10,
   },
   button: {
     flex: 1,
