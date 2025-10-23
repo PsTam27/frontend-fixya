@@ -1,9 +1,9 @@
-
+// 🎯 ARCHIVO: app/(tabs)/perfil.tsx (EDITADO)
 
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 
 // --- Componente Reutilizable para cada opción del menú ---
 const ListItem = ({ icon, text, onPress }: { icon: any; text: string; onPress?: () => void }) => {
@@ -20,7 +20,8 @@ const ListItem = ({ icon, text, onPress }: { icon: any; text: string; onPress?: 
 
 // --- Datos para el menú ---
 const menuOptions = [
-  { icon: 'wallet-outline', text: 'Mi billetera' },
+  // La ruta ya está correcta porque moviste el archivo
+  { icon: 'wallet-outline', text: 'Mi billetera', route: '/informacion-bancaria'},
   { icon: 'settings-outline', text: 'Configuración' },
   { icon: 'lock-closed-outline', text: 'Privacidad y seguridad' },
   { icon: 'document-text-outline', text: 'Solicitudes' },
@@ -32,20 +33,27 @@ export default function PerfilScreen() {
   
   return (
     <SafeAreaView style={styles.container}>
+      {/* --- ESTE BLOQUE AÑADE LA BARRA DE TÍTULO SUPERIOR --- */}
+      <Stack.Screen 
+        options={{
+          headerShown: true, // Hacemos visible el header solo en esta pantalla
+          title: 'Perfil',   // Le damos un título
+          headerRight: () => ( // Creamos el botón de editar a la derecha
+            <TouchableOpacity onPress={() => router.push('/informacion-personaluser-edit')}>
+              <Ionicons name="create-outline" size={24} color="#3498DB" style={{ marginRight: 15 }}/>
+            </TouchableOpacity>
+          ),
+        }}
+      />
+
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* --- Header del Perfil --- */}
+        {/* --- Header del Perfil (sin el botón de editar) --- */}
         <View style={styles.header}>
-          {/* Corregí la ruta de la imagen a ../ */}
+          {/* La ruta de la imagen se corrigió a ../assets/... */}
           <Image source={require('../../assets/images/map.jpeg')} style={styles.avatar} />
           <View>
             <Text style={styles.name}>Nicolas Henandez</Text>
           </View>
-          
-          {/* --- ¡AQUÍ ESTÁ EL CAMBIO! --- */}
-          {/* Añadimos el onPress al TouchableOpacity para que navegue */}
-          <TouchableOpacity onPress={() => router.push('/(tabs)/informacion-personal')}>
-            <Ionicons name="create-outline" size={24} color="#3498DB" />
-          </TouchableOpacity>
         </View>
 
         {/* --- Tarjeta de Estadísticas --- */}
@@ -62,7 +70,15 @@ export default function PerfilScreen() {
               key={index} 
               icon={option.icon} 
               text={option.text} 
-              onPress={() => console.log(`Presionado: ${option.text}`)}
+              // 👇 AQUÍ ESTÁ EL ÚNICO CAMBIO
+              onPress={() => {
+                if (option.route) {
+                  // 'as any' es para que TypeScript no se queje por el tipo de ruta
+                  router.push(option.route as any); 
+                } else {
+                  console.log(`Presionado: ${option.text}`);
+                }
+              }}
             />
           ))}
         </View>
@@ -71,14 +87,16 @@ export default function PerfilScreen() {
   );
 }
 
+// ... (tus estilos van aquí, no cambiaron)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F7F8FA' },
   scrollContent: { paddingHorizontal: 20, paddingTop: 20 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start', // Alinea el contenido a la izquierda
     marginBottom: 30,
+    gap: 15, // Añade un espacio entre la imagen y el nombre
   },
   avatar: {
     width: 60,

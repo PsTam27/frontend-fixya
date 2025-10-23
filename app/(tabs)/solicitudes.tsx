@@ -1,32 +1,146 @@
-// 🎯 ARCHIVO: app/(tabs)/solicitudes.tsx (CON BOTONES FUNCIONALES)
+// 🎯 ARCHIVO: app/(tabs)/solicitudes.tsx (EDITADO)
 
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router'; 
+import { useRouter, Stack } from 'expo-router'; 
 
-// Datos de ejemplo
-const activeRequests = [
-  {
-    id: '1',
-    date: '20/09/2025',
-    jobNumber: '#213',
-    title: 'Mueble cocina',
-    location: 'Calle las rosas 37, Viña del Mar',
-    distance: '2km',
-  }
-];
+// --- Datos de ejemplo (Separados por pestaña) ---
+const MOCK_DATA = {
+  'En curso': [
+    {
+      id: '213', // Usamos el ID como string para que coincida
+      date: '20/09/2025',
+      jobNumber: '#213',
+      title: 'Mueble cocina',
+      location: 'Calle las rosas 37, Viña del Mar',
+      distance: '2km',
+    }
+  ],
+  'Pendientes': [
+    {
+      id: '214',
+      date: '21/09/2025',
+      jobNumber: '#214',
+      title: 'Instalar lámpara',
+      location: 'Calle Falsa 123, Valparaíso',
+      distance: '1.5km',
+    }
+  ],
+  'Historial': [], // El historial está vacío por ahora
+};
+// --- Fin de datos de ejemplo ---
+
 
 export default function SolicitudesScreen() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('Pendientes');
+  const [activeTab, setActiveTab] = useState('En curso'); 
   const tabs = ['Pendientes', 'En curso', 'Historial'];
+
+  // --- 1. FUNCIÓN PARA RENDERIZAR EL CONTENIDO DE LA PESTAÑA ACTIVA ---
+  const renderTabContent = () => {
+    // @ts-ignore
+    const requests = MOCK_DATA[activeTab] || []; 
+
+    if (requests.length === 0) {
+      return <Text style={styles.emptyText}>No hay solicitudes en esta sección.</Text>;
+    }
+
+    // --- LÓGICA PARA "EN CURSO" (Botón "Resumen") ---
+    if (activeTab === 'En curso') {
+      return requests.map(request => (
+        <View key={request.id} style={styles.requestCard}>
+          <TouchableOpacity onPress={() => router.push(`/resumen-solicitud/${request.id}`)}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardDate}>{request.date}</Text>
+              <Text style={styles.cardJobNumber}>{request.jobNumber}</Text>
+            </View>
+            <Text style={styles.cardTitle}>{request.title}</Text>
+            <Text style={styles.cardLocation}>
+              <Ionicons name="location-pin" size={14} color="#7F8C8D" />
+              {' '}{request.location}, <Text style={{color: '#3498DB'}}>{request.distance}</Text>
+            </Text>
+          </TouchableOpacity>
+          
+          {/* 👇 SECCIÓN DE BOTONES EDITADA (SÓLO QUEDA UN BOTÓN) */}
+          <View style={styles.cardButtons}>
+            <TouchableOpacity
+              style={[styles.button, styles.buttonOutline]}
+              onPress={() => router.push(`/resumen-solicitud/${request.id}`)}
+            >
+              <Text style={[styles.buttonText, styles.buttonTextOutline]}>Resumen solicitud</Text>
+            </TouchableOpacity>
+            
+            {/* El botón "Cancelar solicitud" ha sido eliminado */}
+
+          </View>
+        </View>
+      ));
+    }
+
+    // --- LÓGICA PARA "PENDIENTES" (Botón "Editar") ---
+    if (activeTab === 'Pendientes') {
+      return requests.map(request => (
+        <View key={request.id} style={styles.requestCard}>
+          <TouchableOpacity onPress={() => router.push(`/resumen-solicitud/${request.id}`)}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardDate}>{request.date}</Text>
+              <Text style={styles.cardJobNumber}>{request.jobNumber}</Text>
+            </View>
+            <Text style={styles.cardTitle}>{request.title}</Text>
+            <Text style={styles.cardLocation}>
+              <Ionicons name="location-pin" size={14} color="#7F8C8D" />
+              {' '}{request.location}, <Text style={{color: '#3498DB'}}>{request.distance}</Text>
+            </Text>
+          </TouchableOpacity>
+          <View style={styles.cardButtons}>
+            <TouchableOpacity
+              style={[styles.button, styles.buttonOutline]}
+              onPress={() => router.push({
+                pathname: '/(tabs)/editar-solicitud',
+                params: { requestId: request.id }
+              })}
+            >
+              <Text style={[styles.buttonText, styles.buttonTextOutline]}>Editar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.buttonSolid]}
+              onPress={() => router.push({
+                pathname: '/cancelar-solicitud-modal',
+                params: { requestId: request.id }
+              })}
+            >
+              <Text style={styles.buttonText}>Cancelar solicitud</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ));
+    }
+
+    // --- LÓGICA PARA "HISTORIAL" (Sin botones) ---
+    return requests.map(request => (
+      <TouchableOpacity 
+        key={request.id} 
+        style={styles.requestCard}
+        onPress={() => router.push(`/resumen-solicitud/${request.id}`)}
+      >
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardDate}>{request.date}</Text>
+          <Text style={styles.cardJobNumber}>{request.jobNumber}</Text>
+        </View>
+        <Text style={styles.cardTitle}>{request.title}</Text>
+        <Text style={styles.cardLocation}>
+          <Ionicons name="location-pin" size={14} color="#7F8C8D" />
+          {' '}{request.location}, <Text style={{color: '#3498DB'}}>{request.distance}</Text>
+        </Text>
+      </TouchableOpacity>
+    ));
+  };
   
   return (
     <SafeAreaView style={styles.container}>
+      <Stack.Screen options={{ headerShown: true, title: 'Solicitudes' }} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.headerTitle}>Solicitudes</Text>
-
         {/* Pestañas de filtro */}
         <View style={styles.tabContainer}>
           {tabs.map(tab => (
@@ -39,7 +153,6 @@ export default function SolicitudesScreen() {
             </TouchableOpacity>
           ))}
         </View>
-
         {/* Barra de Búsqueda */}
         <View style={styles.searchContainer}>
           <Ionicons name="search-outline" size={20} color="#999" style={styles.searchIcon} />
@@ -49,57 +162,25 @@ export default function SolicitudesScreen() {
             placeholderTextColor="#999"
           />
         </View>
-
+        {/* Título de la lista */}
         <View style={styles.listHeader}>
-          <Text style={styles.listTitle}>1 Solicitud activa</Text>
-          <Text style={styles.listStatus}>En progreso ▼</Text>
+          <Text style={styles.listTitle}>
+            {/* @ts-ignore */}
+            {MOCK_DATA[activeTab]?.length || 0} Solicitud(es)
+          </Text>
+          <Text style={styles.listStatus}>{activeTab} ▼</Text>
         </View>
-
-        {activeRequests.map(request => (
-          <View key={request.id} style={styles.requestCard}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardDate}>{request.date}</Text>
-              <Text style={styles.cardJobNumber}>{request.jobNumber}</Text>
-            </View>
-            <Text style={styles.cardTitle}>{request.title}</Text>
-            <Text style={styles.cardLocation}>
-              <Ionicons name="location-pin" size={14} color="#7F8C8D" />
-              {' '}{request.location}, <Text style={{color: '#3498DB'}}>{request.distance}</Text>
-            </Text>
-            <View style={styles.cardButtons}>
-              <TouchableOpacity
-                style={[styles.button, styles.buttonOutline]}
-                onPress={() => router.push({
-                  pathname: '/(tabs)/editar-solicitud',
-                  params: { requestId: request.id }
-                })}
-              >
-                <Text style={[styles.buttonText, styles.buttonTextOutline]}>Editar</Text>
-              </TouchableOpacity>
-              
-              {/* --- ¡AQUÍ ESTÁ LA CORRECCIÓN! --- */}
-              <TouchableOpacity
-                style={[styles.button, styles.buttonSolid]}
-                // Añadimos la propiedad onPress para abrir el modal de cancelación
-                onPress={() => router.push({
-                  pathname: '/cancelar-solicitud-modal', // La ruta al modal
-                  params: { requestId: request.id } // Pasamos el ID de la solicitud
-                })}
-              >
-                <Text style={styles.buttonText}>Cancelar solicitud</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
+        {/* --- 3. Llamamos a la función de renderizado --- */}
+        {renderTabContent()}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
+// --- TUS ESTILOS (PERMANECEN IGUALES) ---
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F7F8FA' },
   scrollContent: { padding: 20 },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#2C3E50', textAlign: 'center', marginBottom: 20 },
   tabContainer: {
     flexDirection: 'row',
     backgroundColor: '#EAECEE',
@@ -168,6 +249,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 10,
     elevation: 3,
+    marginBottom: 15, 
   },
   cardHeader: {
     flexDirection: 'row',
@@ -219,4 +301,10 @@ const styles = StyleSheet.create({
   buttonTextOutline: {
     color: '#3498DB',
   },
+  emptyText: { 
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#7F8C8D',
+    marginTop: 40,
+  }
 });

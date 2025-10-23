@@ -13,7 +13,7 @@ const maestros = [
     specialty: 'Pintor especialista',
     rating: 4.5,
     availability: 'Lunes a Viernes de 08:00 AM a 18:00 PM',
-    avatar: require('../../assets/images/user.jpeg'),
+    avatar: require('../assets/images/user.jpeg'),
   },
   {
     id: '2',
@@ -22,7 +22,7 @@ const maestros = [
     rating: 5.0,
     availability: 'Lunes a Miercoles de 08:00 AM a 18:00 PM',
 
-    avatar: require('../../assets/images/user.jpeg'),
+    avatar: require('../assets/images/user.jpeg'),
   },
 ];
 

@@ -1,4 +1,4 @@
-// 🎯 ARCHIVO: app/(tabs)/_layout.tsx (VERSIÓN COMPLETA Y FUNCIONAL)
+// 🎯 ARCHIVO: app/(tabs)/_layout.tsx (EDITADO)
 
 import React from 'react';
 import { Tabs } from 'expo-router';
@@ -40,6 +40,7 @@ export default function TabLayout() {
         },
       }}
     >
+      {/* --- PESTAÑAS VISIBLES --- */}
       <Tabs.Screen
         name="index"
         options={{
@@ -69,13 +70,13 @@ export default function TabLayout() {
         }}
       />
 
+      {/* --- PANTALLAS OCULTAS DE LA BARRA --- */}
        <Tabs.Screen
         name="buscar-maestros"
         options={{
           href: null,
         }}
       />
-
       <Tabs.Screen
         name="editar-solicitud"
         options={{
@@ -83,10 +84,17 @@ export default function TabLayout() {
         }}
       />
       
+      {/* 👇 PANTALLAS AÑADIDAS PARA QUITAR LA FLECHA */}
       <Tabs.Screen
-        name="informacion-personal"
+        name="indexmaestro"
         options={{
-          href: null, // Esto la oculta de la barra de pestañas
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="informacion-bancaria"
+        options={{
+          href: null,
         }}
       />
       

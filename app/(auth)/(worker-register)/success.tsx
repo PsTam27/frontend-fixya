@@ -1,5 +1,3 @@
-// 🎯 ARCHIVO: app/(auth)/(worker-register)/success.tsx
-
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -8,16 +6,21 @@ export default function WorkerRegisterSuccess() {
   const router = useRouter();
 
   const handleGoToHome = () => {
-    // Reemplaza la pantalla actual con la nueva pantalla principal del MAESTRO.
-    router.replace('/(maestro)'); 
+    // ¡ESTA ES LA LÓGICA CORRECTA!
+    // Reemplaza la pila de autenticación con el nuevo grupo de layout (maestro)
+    router.replace('/(tabs)/indexmaestro'); 
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mainContent}>
         <Text style={styles.title}>¡Felicidades! ya eres parte de nuestro equipo de trabajo.</Text>
+        
+        {/* Ajuste en la ruta de la imagen para que coincida con la estructura */}
         <Image source={require('../../../assets/images/logo.jpeg')} style={styles.logo} />
+
         <Text style={styles.subtitle}>Recuerda completar tu perfil profesional y leer nuestra políticas de servicio.</Text>
+        
         <TouchableOpacity style={styles.button} onPress={handleGoToHome}>
           <Text style={styles.buttonText}>Ir a inicio</Text>
         </TouchableOpacity>
