@@ -8,7 +8,7 @@ export default function WorkerRegisterSuccess() {
   const handleGoToHome = () => {
     // ¡ESTA ES LA LÓGICA CORRECTA!
     // Reemplaza la pila de autenticación con el nuevo grupo de layout (maestro)
-    router.replace('/(tabs)/indexmaestro'); 
+    router.replace('/(tabs2)/indexmaestro'); 
   };
 
   return (
