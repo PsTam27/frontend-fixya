@@ -1,11 +1,11 @@
-// 🎯 ARCHIVO: app/(tabs2)/index.tsx (EDITADO)
+// 🎯 ARCHIVO: app/(tabs2)/index.tsx (REDISENADO)
 
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 
-// --- Simulación de Datos (basado en tu foto) ---
+// --- Simulación de Datos (actualizado a tu nuevo diseño) ---
 const maestro = {
   nombre: 'Esteban',
   apellido: 'Carpintero',
@@ -14,30 +14,45 @@ const maestro = {
   trabajosCompletados: 20,
 };
 
+// --- Datos de oferta actualizados ---
 const ofertas = [
   { 
-    id: 213, // Usamos 213 como en tus fotos de ejemplo
-    titulo: 'Remodelación reja', 
+    id: 212, // Trabajo #212
+    titulo: 'Reparación fuga gas', 
+    fecha: '20/09/25', 
+    duracion: '1 día', 
+    estado: 'Urgente', // Estado "Urgente"
+    ubicacion: 'San alfonso 550, Viña del mar, 2km', 
+    precio: '$50.000' 
+  },
+  { 
+    id: 213, 
+    titulo: 'Remodelación techo', 
     fecha: '20/09/25', 
     duracion: '3 días', 
-    estado: 'Disponible', 
+    estado: 'Disponible', // Estado "Disponible"
     ubicacion: 'Calle las rosas 37, Viña del Mar, 2km.', 
     precio: '$30.000' 
   },
-  // ... aquí puedes agregar más ofertas de trabajo
 ];
 
-// --- Componente Reutilizable para las Tarjetas de Oferta ---
-// 👇 1. Añadimos 'router' a las props
+// --- Componente Reutilizable para las Tarjetas de Oferta (MODIFICADO) ---
 const OfferCard = ({ oferta, router }: { oferta: (typeof ofertas)[0], router: any }) => {
+  
+  // Lógica condicional para la etiqueta (badge)
+  const isUrgente = oferta.estado === 'Urgente';
+  const badgeStyle = isUrgente ? styles.urgenteBadge : styles.disponibleBadge;
+  const badgeTextStyle = isUrgente ? styles.urgenteText : styles.disponibleText;
+
   return (
     <View style={styles.card}>
       {/* Header de la tarjeta */}
       <View style={styles.cardHeader}>
         <Text style={styles.cardDate}>{oferta.fecha}</Text>
         <Text style={styles.cardDuration}>{oferta.duracion}</Text>
-        <View style={styles.disponibleBadge}>
-          <Text style={styles.disponibleText}>{oferta.estado}</Text>
+        {/* Usamos los estilos condicionales */}
+        <View style={badgeStyle}>
+          <Text style={badgeTextStyle}>{oferta.estado}</Text>
         </View>
       </View>
       
@@ -50,16 +65,25 @@ const OfferCard = ({ oferta, router }: { oferta: (typeof ofertas)[0], router: an
         <Text style={styles.locationText}>{oferta.ubicacion}</Text>
       </View>
       
-      {/* Footer de la tarjeta */}
+      {/* Footer de la tarjeta (MODIFICADO con 2 botones) */}
       <View style={styles.cardFooter}>
         <Text style={styles.price}>{oferta.precio}</Text>
-        {/* 👇 2. Añadimos el 'onPress' con la navegación */}
-        <TouchableOpacity 
-          style={styles.detailsButton}
-          onPress={() => router.push(`/detalles-trabajo-maestro/${oferta.id}`)}
-        >
-          <Text style={styles.detailsButtonText}>Detalles</Text>
-        </TouchableOpacity>
+        
+        <View style={styles.cardButtonsContainer}>
+          <TouchableOpacity 
+            style={styles.buttonOutline} // Botón "Detalles" con borde
+            onPress={() => router.push(`/detalles-trabajo-maestro/${oferta.id}`)}
+          >
+            <Text style={styles.buttonTextOutline}>Detalles</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.buttonSolid} // Botón "Aceptar Trabajo" sólido
+            onPress={() => console.log('Aceptar trabajo:', oferta.id)} // Lógica para aceptar
+          >
+            <Text style={styles.buttonTextSolid}>Aceptar Trabajo</Text>
+          </TouchableOpacity>
+        </View>
+
       </View>
     </View>
   );
@@ -79,7 +103,8 @@ export default function MaestroDashboardScreen() {
         <View style={styles.header}>
           <View style={styles.userInfo}>
             <Image 
-              source={{ uri: 'https://placehold.co/60x60/E2E8F0/333?text=E' }} // Reemplaza con la imagen real
+              // Reemplaza esta URI por tu imagen de avatar local (ej. require(...))
+              source={{ uri: 'https://placehold.co/50x50/FAD7A0/C0392B?text=🧑' }} 
               style={styles.avatar} 
             />
             <View>
@@ -97,7 +122,7 @@ export default function MaestroDashboardScreen() {
           </View>
         </View>
 
-        {/* --- Sección de Estadísticas (NUEVA) --- */}
+        {/* --- Sección de Estadísticas (SIN CAMBIOS) --- */}
         <Text style={styles.hoursText}>Horas trabajadas: <Text style={{fontWeight: 'bold'}}>{maestro.horasTrabajadas}</Text></Text>
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
@@ -110,7 +135,7 @@ export default function MaestroDashboardScreen() {
           </View>
         </View>
 
-        {/* --- Sección de Ofertas (Adaptada) --- */}
+        {/* --- Sección de Ofertas (SIN CAMBIOS) --- */}
         <View style={styles.searchSection}>
             <Text style={styles.sectionTitle}>Ofertas disponibles</Text>
             <TouchableOpacity onPress={() => console.log('Ver todas las ofertas')}>
@@ -118,13 +143,12 @@ export default function MaestroDashboardScreen() {
             </TouchableOpacity>
         </View>
         
-        {/* Lista de Ofertas */}
+        {/* Lista de Ofertas (SIN CAMBIOS) */}
         {ofertas.map(oferta => (
-          // 👇 3. Pasamos el 'router' como prop a la tarjeta
           <OfferCard key={oferta.id} oferta={oferta} router={router} />
         ))}
 
-        {/* --- Sección En Progreso (NUEVA) --- */}
+        {/* --- Sección En Progreso (SIN CAMBIOS) --- */}
         <View style={styles.searchSection}>
             <Text style={styles.sectionTitle}>En progreso</Text>
         </View>
@@ -197,33 +221,81 @@ const styles = StyleSheet.create({
   },
   cardDate: { fontSize: 12, color: '#7F8C8D' },
   cardDuration: { fontSize: 12, color: '#7F8C8D', marginLeft: 10 },
+  
+  // --- ESTILOS DE BADGE (ETIQUETA) MODIFICADOS ---
   disponibleBadge: {
     backgroundColor: '#E0F7FA', // Color celeste claro
-    borderRadius: 5,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    borderRadius: 15, // Más redondeado
+    paddingHorizontal: 12,
+    paddingVertical: 5,
     marginLeft: 'auto',
   },
-  disponibleText: { color: '#00838F', fontSize: 12, fontWeight: 'bold' },
+  disponibleText: { 
+    color: '#00838F', 
+    fontSize: 12, 
+    fontWeight: 'bold' 
+  },
+  urgenteBadge: { // NUEVO
+    backgroundColor: '#E74C3C', // Rojo
+    borderRadius: 15,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    marginLeft: 'auto',
+  },
+  urgenteText: { // NUEVO
+    color: 'white', 
+    fontSize: 12, 
+    fontWeight: 'bold' 
+  },
+  // --- FIN ESTILOS DE BADGE ---
+
   cardTitle: { fontSize: 16, fontWeight: 'bold', color: '#34495E', marginBottom: 10 },
   locationContainer: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 15 },
   locationText: { fontSize: 14, color: '#555', flexShrink: 1 },
+  
+  // --- ESTILOS DE FOOTER DE TARJETA MODIFICADOS ---
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#F0F0F0',
-    paddingTop: 10,
+    paddingTop: 15, // Más padding
   },
-  price: { fontSize: 18, fontWeight: 'bold', color: '#27AE60' },
-  detailsButton: {
+  price: { 
+    fontSize: 18, 
+    fontWeight: 'bold', 
+    color: '#2C3E50' // Color cambiado de verde a oscuro
+  },
+  cardButtonsContainer: { // NUEVO
+    flexDirection: 'row',
+    gap: 10,
+  },
+  buttonOutline: { // NUEVO (antes 'detailsButton')
+    backgroundColor: 'white',
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#3498DB',
+  },
+  buttonTextOutline: { // NUEVO (antes 'detailsButtonText')
+    color: '#3498DB', 
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  buttonSolid: { // NUEVO
     backgroundColor: '#3498DB',
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 20,
   },
-  detailsButtonText: { color: 'white', fontWeight: 'bold' },
+  buttonTextSolid: { // NUEVO
+    color: 'white', 
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  // --- FIN ESTILOS DE FOOTER ---
   
   inProgressCard: {
     alignItems: 'center',
