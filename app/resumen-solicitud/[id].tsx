@@ -1,4 +1,4 @@
-// 🎯 ARCHIVO: app/resumen-solicitud/[id].tsx (COMPLETO Y ACTUALIZADO)
+// 🎯 ARCHIVO: app/resumen-solicitud/[id].tsx (CON NAVEGACIÓN A PERFIL MAESTRO)
 
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
@@ -6,12 +6,20 @@ import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 
 export default function ResumenSolicitudScreen() {
   const router = useRouter();
-  // 'useLocalSearchParams' lee el [id] (ej. "213") de la URL
   const { id } = useLocalSearchParams(); 
 
-  // --- Aquí harías una llamada a tu backend de Go con el 'id' ---
-  // const { data: solicitud, isLoading } = useQuery(['solicitud', id], fetchSolicitud);
-  // Por ahora, usamos los datos de la captura
+  // --- Datos de ejemplo ---
+  // 👇 NECESITAS OBTENER EL ID DEL MAESTRO ASIGNADO A ESTA SOLICITUD (ej: 'maestro123')
+  const maestroId = 'maestro123'; // Reemplaza esto con el ID real
+
+  const solicitud = {
+      titulo: 'Mueble de cocina',
+      trabajadorNombre: 'Esteban Tamayo', // Nombre del trabajador
+      fechaEntrega: '20/09/2025',
+      direccionCompleta: 'Calle las rosas 37, Viña del Mar.',
+      descripcionCorta: 'Necesito un mueble de cocina para mi casa, que sea de 2 puertas y ..',
+      // ... otros datos de la solicitud
+  };
   
   return (
     <SafeAreaView style={styles.container}>
@@ -26,18 +34,18 @@ export default function ResumenSolicitudScreen() {
       />
       
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>Mueble de cocina</Text>
+        <Text style={styles.title}>{solicitud.titulo}</Text>
         <Text style={styles.info}>
           <Text style={styles.infoLabel}>Trabajador a cargo: </Text>
-          Esteban Tamayo
+          {solicitud.trabajadorNombre}
         </Text>
         <Text style={styles.info}>
           <Text style={styles.infoLabel}>Fecha entrega: </Text>
-          20/09/2025
+          {solicitud.fechaEntrega}
         </Text>
         <Text style={styles.info}>
           <Text style={styles.infoLabel}>Dirección: </Text>
-          Calle las rosas 37, Viña del Mar.
+          {solicitud.direccionCompleta}
         </Text>
         
         {/* Placeholder del Mapa */}
@@ -47,7 +55,7 @@ export default function ResumenSolicitudScreen() {
 
         <Text style={styles.infoLabel}>Descripción:</Text>
         <Text style={styles.info}>
-          Necesito un mueble de cocina para mi casa, que sea de 2 puertas y .. 
+          {solicitud.descripcionCorta}
           <Text style={styles.verMas}> Ver más</Text>
         </Text>
 
@@ -55,15 +63,20 @@ export default function ResumenSolicitudScreen() {
 
       {/* Botones fijos al final */}
       <View style={styles.footer}>
-        {/* 👇 AQUÍ ESTÁ EL BOTÓN ACTUALIZADO 👇 */}
         <TouchableOpacity 
           style={styles.buttonSolid}
-          onPress={() => router.push(`/estado-solicitud/${id}`)} // Navega a la pantalla de estado
+          onPress={() => router.push(`/estado-solicitud/${id}`)} 
+          
         >
           <Text style={styles.buttonText}>Consultar estado</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.buttonOutline}>
+        {/* 👇 AQUÍ ESTÁ EL CAMBIO 👇 */}
+        <TouchableOpacity 
+          style={styles.buttonOutline}
+          // Navega a la ruta dinámica del perfil del maestro usando su ID
+          onPress={() => router.push(`/maestro-profile/${maestroId}`)} 
+        >
           <Text style={styles.buttonTextOutline}>Consultar perfil de trabajador</Text>
         </TouchableOpacity>
       </View>
@@ -71,11 +84,12 @@ export default function ResumenSolicitudScreen() {
   );
 }
 
+// --- ESTILOS (Sin cambios estructurales) ---
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: 'white' },
   scrollContent: { 
     padding: 20,
-    paddingBottom: 150, // Espacio para los botones fijos
+    paddingBottom: 150, 
   },
   title: { 
     fontSize: 22, 
@@ -109,7 +123,6 @@ const styles = StyleSheet.create({
     color: '#3498DB',
     fontWeight: 'bold',
   },
-  // Contenedor de botones al final
   footer: {
     position: 'absolute',
     bottom: 0,
@@ -117,7 +130,7 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'white',
     padding: 20,
-    paddingBottom: 30, // Más espacio en el fondo
+    paddingBottom: 30, 
     borderTopWidth: 1,
     borderTopColor: '#F0F0F0',
     gap: 15,

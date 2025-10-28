@@ -1,120 +1,201 @@
-// 🎯 ARCHIVO: app/(tabs2)/_layout.tsx
+// 🎯 ARCHIVO: app/(tabs2)/perfil-maestro.tsx (DISEÑO FINAL)
 
 import React from 'react';
-import { Tabs } from 'expo-router';
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, View, Text } from 'react-native';
+import { Stack, useRouter } from 'expo-router';
 
-export default function TabLayoutMaestro() {
+// --- Componente Reutilizable para cada opción del menú ---
+const ListItem = ({ icon, text, onPress }: { icon: any; text: string; onPress?: () => void }) => {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: '#3498DB', // Color de ícono y texto activo
-        tabBarInactiveTintColor: '#7F8C8D', // Color de ícono y texto inactivo
-        tabBarShowLabel: true, // Mostrar el texto debajo del ícono
-        tabBarStyle: {
-          height: 80, // Ajusta la altura de la barra si es necesario
-          paddingTop: 10,
-          paddingBottom: 15,
-          backgroundColor: 'white',
-          borderTopWidth: 1,
-          borderTopColor: '#f0f0f0',
-        },
-        tabBarLabelStyle: {
-          fontSize: 12, // Tamaño del texto de la etiqueta
-          fontWeight: '600',
-        },
-        headerShown: false, // Ocultar el encabezado por defecto, cada pantalla puede definir el suyo
-      }}
-    >
-      {/* --- Pestaña: Trabajos (como en tu Imagen 2) --- */}
-      <Tabs.Screen
-        name="Perfil" // Nombre del archivo: app/(tabs2)/trabajos.tsx
+    <TouchableOpacity style={styles.listItem} onPress={onPress}>
+      <View style={styles.listItemContent}>
+        <Ionicons name={icon} size={24} color="#555" style={styles.listItemIcon} />
+        <Text style={styles.listItemText}>{text}</Text>
+      </View>
+      <Ionicons name="chevron-forward-outline" size={20} color="#BDBDBD" />
+    </TouchableOpacity>
+  );
+};
+
+// --- Datos de ejemplo (basados en la foto) ---
+const maestroInfo = {
+  nombre: 'Esteban',
+  apellido: 'Tamayo',
+  rol: 'Carpintero',
+  trabajosCompletados: 170,
+  miembroDesde: '20/06/2020',
+};
+
+// --- Opciones del menú (basadas en la foto) ---
+const menuOptions = [
+  { icon: 'wallet-outline', text: 'Mi billetera', route: '/(maestro)/informacion-bancaria'}, // Revisa si esta ruta es correcta
+  { icon: 'document-attach-outline', text: 'Documentos', route: '/documentos-maestro' },
+  { icon: 'settings-outline', text: 'Configuración' },
+  { icon: 'lock-closed-outline', text: 'Privacidad y seguridad' },
+  { icon: 'log-out-outline', text: 'Cerrar sesión' },
+];
+
+export default function PerfilMaestroScreen() {
+  const router = useRouter();
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* --- Configura la barra de título --- */}
+      <Stack.Screen
         options={{
-          title: 'Trabajos',
-          tabBarIcon: ({ color, focused }) => (
-            <View style={styles.tabIconContainer}>
-              <Ionicons 
-                name={focused ? "add-circle" : "add-circle-outline"} // Ícono de "Trabajos" con "+"
-                size={26} 
-                color={color} 
-              />
-              {/* <Text style={{ color: color, fontSize: 12, fontWeight: focused ? 'bold' : 'normal' }}>Trabajos</Text> */}
-            </View>
+          headerShown: true,
+          title: '', // Sin título en el header
+          headerRight: () => ( // Botón de lápiz a la derecha
+            <TouchableOpacity
+              // Navega a la pantalla de edición
+              onPress={() => router.push('/informacion-personaluser-edit')} // Asegúrate que esta ruta exista en app/
+            >
+              <Ionicons name="create-outline" size={24} color="#3498DB" style={{ marginRight: 15 }}/>
+            </TouchableOpacity>
           ),
-          tabBarLabel: ({ color, focused }) => (
-            <Text style={{ color: color, fontSize: 12, fontWeight: focused ? 'bold' : 'normal' }}>Trabajos</Text>
-          ),
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: '#F7F8FA' }
         }}
       />
 
-      {/* --- Pestaña: Historial (un ejemplo, ajusta el nombre del archivo) --- */}
-      <Tabs.Screen
-        name="historial-maestro" // Nombre del archivo: app/(tabs2)/historial-maestro.tsx
-        options={{
-          title: 'Historial',
-          tabBarIcon: ({ color, focused }) => (
-            <View style={styles.tabIconContainer}>
-              <Ionicons 
-                name={focused ? "checkmark-circle" : "checkmark-circle-outline"} // Ícono de "checkmark"
-                size={26} 
-                color={color} 
-              />
-            </View>
-          ),
-          tabBarLabel: ({ color, focused }) => (
-            <Text style={{ color: color, fontSize: 12, fontWeight: focused ? 'bold' : 'normal' }}>Historial</Text>
-          ),
-        }}
-      />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* --- Header del Perfil --- */}
+        <View style={styles.profileHeader}>
+          <Image
+            // Reemplaza con tu imagen de avatar
+            source={{ uri: 'https://placehold.co/60x60/FAD7A0/C0392B?text=🧑' }}
+            style={styles.avatar}
+          />
+          <View>
+            <Text style={styles.name}>{maestroInfo.nombre} {maestroInfo.apellido}</Text>
+            <Text style={styles.role}>{maestroInfo.rol}</Text>
+          </View>
+        </View>
 
-      {/* --- Pestaña: Pagos (un ejemplo, ajusta el nombre del archivo) --- */}
-      <Tabs.Screen
-        name="pagos-maestro" // Nombre del archivo: app/(tabs2)/pagos-maestro.tsx
-        options={{
-          title: 'Pagos',
-          tabBarIcon: ({ color, focused }) => (
-            <View style={styles.tabIconContainer}>
-              <Ionicons 
-                name={focused ? "card" : "card-outline"} // Ícono de "tarjeta"
-                size={26} 
-                color={color} 
-              />
-            </View>
-          ),
-          tabBarLabel: ({ color, focused }) => (
-            <Text style={{ color: color, fontSize: 12, fontWeight: focused ? 'bold' : 'normal' }}>Pagos</Text>
-          ),
-        }}
-      />
+        {/* --- Tarjeta de Estadísticas (Estilos ajustados) --- */}
+        <View style={styles.statsCard}>
+          <Text style={styles.statsMainText}>
+            <Text style={{fontWeight: 'bold'}}>{maestroInfo.trabajosCompletados}</Text> Trabajos completados
+          </Text>
+          <Text style={styles.statsSubText}>Miembro desde {maestroInfo.miembroDesde}</Text>
+          {/* 👇 Texto "Calidad alta" ajustado */}
+          <Text style={styles.qualityText}>Calidad alta ⭐</Text>
+          {/* 👇 Enlace "Ver reseñas" ajustado */}
+          <TouchableOpacity onPress={() => console.log('Ver reseñas')}>
+            <Text style={styles.reviewLink}>Ver reseñas</Text>
+          </TouchableOpacity>
+        </View>
 
-      {/* --- Pestaña: Perfil (un ejemplo, ajusta el nombre del archivo) --- */}
-      <Tabs.Screen
-        name="perfil-maestro" // Nombre del archivo: app/(tabs2)/perfil-maestro.tsx
-        options={{
-          title: 'Perfil',
-          tabBarIcon: ({ color, focused }) => (
-            <View style={styles.tabIconContainer}>
-              <Ionicons 
-                name={focused ? "person" : "person-outline"} // Ícono de "persona"
-                size={26} 
-                color={color} 
-              />
-            </View>
-          ),
-          tabBarLabel: ({ color, focused }) => (
-            <Text style={{ color: color, fontSize: 12, fontWeight: focused ? 'bold' : 'normal' }}>Perfil</Text>
-          ),
-        }}
-      />
-    </Tabs>
+        {/* --- Menú de Opciones --- */}
+        <View style={styles.menuContainer}>
+          {menuOptions.map((option, index) => (
+            <ListItem
+              key={index}
+              icon={option.icon}
+              text={option.text}
+              onPress={() => {
+                if (option.route) {
+                  router.push(option.route as any);
+                } else {
+                  console.log(`Presionado: ${option.text}`);
+                }
+              }}
+            />
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
+// --- ESTILOS ACTUALIZADOS ---
 const styles = StyleSheet.create({
-  tabIconContainer: {
+  container: { flex: 1, backgroundColor: '#F7F8FA' },
+  scrollContent: { paddingHorizontal: 20, paddingTop: 10 },
+  profileHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 5,
+    marginBottom: 25,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 15,
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#2C3E50',
+  },
+  role: {
+    fontSize: 14,
+    color: '#7F8C8D',
+  },
+  statsCard: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    paddingVertical: 20, // Padding vertical
+    paddingHorizontal: 15, // Padding horizontal
+    alignItems: 'center', // Centra todo el contenido
+    marginBottom: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  statsMainText: {
+    fontSize: 16,
+    color: '#2C3E50',
+    marginBottom: 8,
+    textAlign: 'center', // Centrado
+  },
+  statsSubText: {
+    fontSize: 14,
+    color: '#7F8C8D',
+    marginBottom: 8, // Más espacio
+    textAlign: 'center', // Centrado
+  },
+  // 👇 Estilo para "Calidad alta"
+  qualityText: {
+    fontSize: 16, // Más grande
+    color: '#2C3E50',
+    fontWeight: 'bold', // Negrita
+    marginBottom: 15, // Más espacio debajo
+    textAlign: 'center',
+  },
+  // 👇 Estilo para "Ver reseñas"
+  reviewLink: {
+    fontSize: 14,
+    color: '#3498DB',
+    fontWeight: 'bold',
+    // Quitamos marginTop para que el padding de la tarjeta controle el espacio
+  },
+  menuContainer: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    overflow: 'hidden',
+  },
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  listItemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  listItemIcon: {
+    marginRight: 15,
+  },
+  listItemText: {
+    fontSize: 16,
+    color: '#34495E',
   },
 });

@@ -1,157 +1,194 @@
-// 🎯 ARCHIVO: app/detalles-trabajo-maestro/[id].tsx (CON MODAL)
+// 🎯 ARCHIVO: app/detalles-trabajo-maestro/[id].tsx (CONDICIONAL COMPLETO)
 
 import React, { useState } from 'react';
-import { 
-  StyleSheet, Text, View, SafeAreaView, 
-  TouchableOpacity, ScrollView, Image,
-  Modal, Pressable // 👇 1. Importamos Modal y Pressable
+import {
+  StyleSheet, Text, View, SafeAreaView, TouchableOpacity,
+  ScrollView, TextInput, KeyboardAvoidingView, Platform, Image // Añadido Image
 } from 'react-native';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons'; // 👇 1. Importamos Ionicons
+import { Ionicons } from '@expo/vector-icons';
 
-// --- Textos completos (para el "Ver más") ---
+// --- Textos completos ---
 const fullDescription = "El techo presenta evidentes filtraciones de agua durante la lluvia, cliente sospecha que el problema es una teja rota. Se necesita revisión completa y reemplazo de las partes dañadas para evitar futuras goteras.";
 const fullMaterials = "Planchas de zinc, aluzinc o fibrocemento (según elección). Clavos, tornillos autoperforantes y arandelas de goma. Sellador de techo de alta calidad.";
 
-
-export default function DetallesTrabajoScreen() {
+export default function DetallesTrabajoMaestroScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams(); 
+  // Leemos el parámetro 'fromHistory' además del 'id'
+  const { id, fromHistory } = useLocalSearchParams();
+  // Convertimos a booleano, será true si venimos del historial
+  const isAcceptedJob = fromHistory === 'true';
 
+  // --- Para Depurar: Verifica el valor del parámetro ---
+  console.log("[DetallesTrabajo] Valor de fromHistory:", fromHistory);
+  console.log("[DetallesTrabajo] ¿Es trabajo aceptado (viene de historial)?", isAcceptedJob);
+  // --- Fin de Depuración ---
+
+
+  // --- Datos de ejemplo (sustituye con datos reales de tu backend) ---
+  const trabajo = {
+    id: id,
+    jobNumber: '#213',
+    title: 'Remodelación de techo',
+    location: 'Calle las rosas 37, Viña del Mar',
+    distance: '2km',
+    description: fullDescription, // Usamos el texto completo
+    materials: fullMaterials,     // Usamos el texto completo
+    duration: '3 días trabajo',
+    price: '$30.000',
+    savedComment: isAcceptedJob ? 'Cliente pidió revisar también el patio trasero por humedad.' : '', // Solo carga comentario si está aceptado
+  };
+
+  // Estados para comentarios y "Ver más"
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [isMatExpanded, setIsMatExpanded] = useState(false);
+  const [showCommentInput, setShowCommentInput] = useState(false);
+  const [commentText, setCommentText] = useState(trabajo.savedComment);
+  const [currentSavedComment, setCurrentSavedComment] = useState(trabajo.savedComment);
 
-  // 👇 2. Añadimos el estado para el modal
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const handleAceptarTrabajo = () => {
-    // Aquí iría tu lógica de API para aceptar el trabajo
-    console.log('Trabajo Aceptado:', id);
-    setModalVisible(false); // Cierra el modal
-    router.back(); // Vuelve al dashboard
+  // Funciones para manejar comentarios
+  const handleToggleCommentInput = () => {
+     if (!showCommentInput && currentSavedComment) { setCommentText(currentSavedComment); }
+     setShowCommentInput(!showCommentInput);
+     if (showCommentInput && !commentText) { setCurrentSavedComment(''); }
   };
-  
+  const handleSaveComment = () => {
+    setCurrentSavedComment(commentText); setShowCommentInput(false);
+    console.log(`Comentario guardado para el trabajo ${id}: ${commentText}`);
+  };
+  const handleCancelComment = () => {
+    setCommentText(currentSavedComment); setShowCommentInput(false);
+  };
+
+  // Función para Aceptar (solo se llamará si el botón es visible)
+  const handleAcceptJob = () => {
+    console.log('Aceptar trabajo (desde Detalles inicial):', id);
+    // Lógica para aceptar el trabajo...
+    router.push(`/seguimiento-trabajo/${id}`);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* ... (Tu Stack.Screen y ScrollView no cambian) ... */}
-      <Stack.Screen 
-        options={{ 
-          headerShown: true, 
-          title: 'Detalles trabajo',
-          headerShadowVisible: false,
-          headerStyle: { backgroundColor: 'white' }
-        }} 
-      />
-      
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* ... (Toda la info del trabajo no cambia) ... */}
-        
-        <Text style={styles.jobInfo}>Trabajo #{id}</Text>
-        <Text style={styles.title}>Remodelación de techo</Text>
-        <Text style={styles.location}>
-          Calle las rosas 37, Viña del Mar, <Text style={styles.distance}>2km.</Text>
-        </Text>
-        <View style={styles.mapPlaceholder}>
-          <Text style={styles.mapText}>[Aquí va el componente de Mapa]</Text>
-        </View>
-        <Text style={styles.sectionTitle}>Descripción:</Text>
-        <Text style={styles.bodyText} numberOfLines={isDescExpanded ? undefined : 2} ellipsizeMode="tail">
-          {fullDescription}
-        </Text>
-        <TouchableOpacity onPress={() => setIsDescExpanded(!isDescExpanded)}>
-          <Text style={styles.verMas}>{isDescExpanded ? 'Ver menos' : 'Ver más'}</Text>
-        </TouchableOpacity>
-        <Text style={styles.sectionTitle}>Materiales:</Text>
-        <Text style={styles.bodyText} numberOfLines={isMatExpanded ? undefined : 2} ellipsizeMode="tail">
-          {fullMaterials}
-        </Text>
-        <TouchableOpacity onPress={() => setIsMatExpanded(!isMatExpanded)}>
-          <Text style={styles.verMas}>{isMatExpanded ? 'Ver menos' : 'Ver más'}</Text>
-        </TouchableOpacity>
-        <View style={styles.finalInfoContainer}>
-          <Text style={styles.workDuration}>3 días trabajo</Text>
-          <Text style={styles.price}>$30.000</Text>
-        </View>
-
-        {/* --- NUEVO BOTÓN "ACEPTAR" --- */}
-        <TouchableOpacity 
-          style={styles.acceptButton}
-          onPress={() => setModalVisible(true)} // 👇 3. Actualizamos el onPress
-        >
-          <Text style={styles.acceptButtonText}>Aceptar</Text>
-        </TouchableOpacity>
-
-      </ScrollView>
-
-      {/* --- 4. AÑADIMOS EL MODAL --- */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
       >
-        <Pressable 
-          style={styles.modalOverlay} // Fondo oscuro semitransparente
-          onPress={() => setModalVisible(false)} // Cierra al tocar fuera
-        >
-          <Pressable 
-            style={styles.modalContent} 
-            onPress={() => {}} // Evita que se cierre al tocar dentro
-          >
-            {/* Usamos un Ionicon similar al de tu foto */}
-            <Ionicons name="thumbs-up-outline" size={70} color="#3498DB" style={{ marginBottom: 15 }} />
-            
-            <Text style={styles.modalTitle}>Aceptar trabajo?</Text>
+        {/* Encabezado de la pantalla */}
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            title: 'Detalles trabajo',
+            headerShadowVisible: false,
+            headerStyle: { backgroundColor: 'white' }
+          }}
+        />
 
-            <TouchableOpacity 
-              style={styles.modalButtonAccept} 
-              onPress={handleAceptarTrabajo}
-            >
-              <Text style={styles.modalButtonTextAccept}>Aceptar</Text>
-            </TouchableOpacity>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Text style={styles.jobNumber}>Trabajo {trabajo.jobNumber}</Text>
+          <Text style={styles.title}>{trabajo.title}</Text>
+          <Text style={styles.location}>
+            <Ionicons name="location-pin" size={14} color="#7F8C8D" />
+            {' '}{trabajo.location}, <Text style={styles.distance}>{trabajo.distance}</Text>
+          </Text>
 
-            <TouchableOpacity 
-              style={styles.modalButtonCancel}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.modalButtonTextCancel}>CANCELAR</Text>
-            </TouchableOpacity>
+          {/* Mapa */}
+          <View style={styles.mapPlaceholder}>
+            <Text style={styles.mapText}>[Aquí va el componente de Mapa]</Text>
+          </View>
 
-          </Pressable>
-        </Pressable>
-      </Modal>
+          {/* Descripción */}
+          <Text style={styles.sectionTitle}>Descripción:</Text>
+          <Text style={styles.detailsText} numberOfLines={isDescExpanded ? undefined : 2} ellipsizeMode="tail">
+            {trabajo.description}
+          </Text>
+          <TouchableOpacity onPress={() => setIsDescExpanded(!isDescExpanded)}>
+            <Text style={styles.linkText}>{isDescExpanded ? 'Ver menos' : 'Ver más'}</Text>
+          </TouchableOpacity>
 
+          {/* Materiales */}
+          <Text style={styles.sectionTitle}>Materiales:</Text>
+          <Text style={styles.detailsText} numberOfLines={isMatExpanded ? undefined : 2} ellipsizeMode="tail">
+            {trabajo.materials}
+          </Text>
+          <TouchableOpacity onPress={() => setIsMatExpanded(!isMatExpanded)}>
+            <Text style={styles.linkText}>{isMatExpanded ? 'Ver menos' : 'Ver más'}</Text>
+          </TouchableOpacity>
+
+          {/* --- SECCIÓN CONDICIONAL: Notas de trabajador --- */}
+          {isAcceptedJob && (
+            <>
+              <Text style={styles.sectionTitle}>Notas de trabajador</Text>
+              {!showCommentInput ? (
+                <>
+                  {currentSavedComment ? (
+                    <Text style={styles.savedCommentText}>{currentSavedComment}</Text>
+                  ) : null}
+                  <TouchableOpacity onPress={handleToggleCommentInput}>
+                    <Text style={styles.addCommentLink}>
+                      {currentSavedComment ? 'Editar comentario' : '+ Agregar comentarios'}
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <View>
+                  <TextInput
+                    style={styles.commentInput}
+                    placeholder="Escribe tus notas aquí..."
+                    multiline
+                    value={commentText}
+                    onChangeText={setCommentText}
+                    autoFocus={true}
+                  />
+                  <View style={styles.commentButtonsContainer}>
+                    <TouchableOpacity onPress={handleCancelComment} style={styles.commentCancelButton}>
+                       <Text style={styles.commentCancelButtonText}>Cancelar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleSaveComment} style={styles.commentAcceptButton}>
+                       <Text style={styles.commentAcceptButtonText}>Aceptar</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            </>
+          )}
+
+          {/* Duración y Precio */}
+          <Text style={styles.durationText}>{trabajo.duration}</Text>
+          <Text style={styles.priceText}>{trabajo.price}</Text>
+
+        
+
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
+// --- ESTILOS (Sin cambios estructurales) ---
 const styles = StyleSheet.create({
-  // ... (Tus estilos existentes no cambian)
   container: { flex: 1, backgroundColor: 'white' },
-  scrollContent: { 
+  scrollContent: {
     padding: 20,
     paddingBottom: 40,
   },
-  jobInfo: {
+  jobNumber: {
     fontSize: 14,
     color: '#7F8C8D',
     marginBottom: 5,
-    marginTop: 10, 
   },
-  title: { 
-    fontSize: 22, 
-    fontWeight: 'bold', 
-    marginBottom: 10,
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
     color: '#2C3E50',
+    marginBottom: 10,
   },
-  location: { 
-    fontSize: 16, 
-    color: '#34495E', 
-    marginBottom: 15,
+  location: {
+    fontSize: 14,
+    color: '#7F8C8D',
+    marginBottom: 20,
   },
-  distance: {
+   distance: {
     color: '#3498DB',
     fontWeight: 'bold',
   },
@@ -161,7 +198,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 15,
+    marginVertical: 20,
   },
   mapText: {
     color: '#7F8C8D',
@@ -171,37 +208,85 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#2C3E50',
-    marginTop: 15,
+    marginTop: 20,
     marginBottom: 8,
   },
-  bodyText: {
+  detailsText: {
     fontSize: 16,
     color: '#34495E',
     lineHeight: 22,
+    marginBottom: 5,
   },
-  verMas: {
+  linkText: {
+    fontSize: 16,
     color: '#3498DB',
     fontWeight: 'bold',
-    fontSize: 16, 
-    marginTop: 5,
-    paddingBottom: 10, 
+    marginBottom: 15,
+    paddingVertical: 5,
   },
-  finalInfoContainer: {
-    marginTop: 20,
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
-  },
-  workDuration: {
+  durationText: {
     fontSize: 16,
-    color: '#555',
-    marginBottom: 8,
+    color: '#7F8C8D',
+    marginTop: 30,
+    marginBottom: 5,
   },
-  price: {
-    fontSize: 24,
+  priceText: {
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#2C3E50', 
+    color: '#2C3E50',
+    marginBottom: 25,
+  },
+  savedCommentText: {
+    fontSize: 16,
+    color: '#34495E',
+    lineHeight: 22,
+    marginBottom: 5,
+    backgroundColor: '#F8F9F9',
+    padding: 10,
+    borderRadius: 5,
+  },
+  addCommentLink: {
+    fontSize: 16,
+    color: '#3498DB',
+    fontWeight: 'bold',
     marginBottom: 20,
+    paddingVertical: 5,
+  },
+  commentInput: {
+    backgroundColor: '#F0F0F0',
+    borderRadius: 10,
+    padding: 15,
+    fontSize: 16,
+    minHeight: 100,
+    textAlignVertical: 'top',
+    marginBottom: 10,
+  },
+  commentButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: 20,
+    gap: 15,
+  },
+  commentCancelButton: {
+     paddingVertical: 5,
+     paddingHorizontal: 10,
+  },
+  commentCancelButtonText: {
+    fontSize: 14,
+    color: '#E74C3C',
+    fontWeight: 'bold',
+  },
+   commentAcceptButton: {
+     backgroundColor: '#3498DB',
+     paddingVertical: 8,
+     paddingHorizontal: 15,
+     borderRadius: 20,
+  },
+  commentAcceptButtonText: {
+    fontSize: 14,
+    color: 'white',
+    fontWeight: 'bold',
   },
   acceptButton: {
     backgroundColor: '#3498DB',
@@ -213,56 +298,6 @@ const styles = StyleSheet.create({
   acceptButtonText: {
     color: 'white',
     fontSize: 18,
-    fontWeight: 'bold',
-  },
-
-  // --- 👇 4. AÑADIMOS LOS ESTILOS DEL MODAL ---
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro
-  },
-  modalContent: {
-    width: '85%',
-    backgroundColor: 'white',
-    borderRadius: 15,
-    padding: 25,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2C3E50',
-    marginBottom: 25,
-  },
-  modalButtonAccept: {
-    backgroundColor: '#3498DB',
-    paddingVertical: 14,
-    borderRadius: 30,
-    alignItems: 'center',
-    width: '100%',
-  },
-  modalButtonTextAccept: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  modalButtonCancel: {
-    marginTop: 15,
-    padding: 10,
-  },
-  modalButtonTextCancel: {
-    color: '#7F8C8D',
-    fontSize: 14,
     fontWeight: 'bold',
   },
 });

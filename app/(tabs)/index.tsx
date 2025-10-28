@@ -55,12 +55,7 @@ export default function HomeScreen() {
           buttonText="Ver maestros"
           onPress={() => router.push('/buscar-maestros')}
         />
-        <Card
-          title="Urgencias"
-          description="Contacta con un maestro disponible ahora mismo o agenda para la fecha más cercana"
-          buttonText="Ver maestros"
-          onPress={() => router.push('/buscar-maestros')}
-        />
+     
         <Card
           title="Remodelaciones"
           description="Consulta nuestro creador de presupuestos para trabajos más extensos"

@@ -40,8 +40,9 @@ export default function TabLayoutMaestro() {
         },
       }}
     >
+      {/* 👇 CAMBIO AQUÍ: Ahora la pestaña "Trabajos" apunta a 'indexmaestro.tsx' */}
       <Tabs.Screen
-        name="trabajos" // Este es tu archivo app/(tabs2)/trabajos.tsx
+        name="indexmaestro" 
         options={{
           title: 'Trabajos',
           tabBarIcon: ({ focused }) => <TabIcon iconName="add-circle" name="Trabajos" focused={focused} />,
@@ -70,7 +71,6 @@ export default function TabLayoutMaestro() {
       />
 
        {/* --- 2. AQUÍ OCULTAMOS LAS RUTAS EXTRA --- */}
-       {/* Oculta app/(tabs2)/index.tsx (tu dashboard "Bienvenido") */}
        <Tabs.Screen
         name="index"
         options={{
@@ -78,9 +78,9 @@ export default function TabLayoutMaestro() {
         }}
       />
       
-      {/* Oculta app/(tabs2)/indexmaestro.tsx (el que sobra) */}
+      {/* 👇 CAMBIO AQUÍ: Ahora el archivo 'trabajos.tsx' está oculto */}
       <Tabs.Screen
-        name="indexmaestro"
+        name="trabajos" 
         options={{
           href: null,
         }}
