@@ -1,22 +1,22 @@
-// 🎯 ARCHIVO: app/(auth)/(worker-register)/step1.tsx
+
 
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router'; // Importamos useRouter para navegar
+import { useRouter } from 'expo-router'; 
 
 export default function WorkerRegisterStep1() {
-  const router = useRouter(); // Inicializamos el hook de router
+  const router = useRouter(); 
   const [email, setEmail] = useState('');
   const [rut, setRut] = useState('');
   const [phone, setPhone] = useState('');
-  const [dob, setDob] = useState('1 Abril, 1990'); // Placeholder de fecha
+  const [dob, setDob] = useState('1 Abril, 1990'); 
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleNext = () => {
-    // Aquí podrías agregar validaciones de los campos
+    
     console.log('Datos Step 1:', { email, rut, phone, dob, city, address, password, confirmPassword });
     // Navegamos al siguiente paso
     router.push('/(auth)/(worker-register)/step2');

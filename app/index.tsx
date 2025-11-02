@@ -1,7 +1,7 @@
-// 🎯 ARCHIVO: app/index.tsx (COMPLETO, con flecha condicional)
+// 🎯 ARCHIVO: app/index.tsx (COMPLETO, con logos más grandes)
 
 import { Link } from 'expo-router';
-import React, { useState, useRef, useEffect } from 'react'; // Importamos hooks
+import React, { useState, useRef, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,11 +11,11 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  ImageSourcePropType, 
-  Animated, // Importamos Animated
-  Easing, // Importamos Easing
+  ImageSourcePropType,
+  Animated,
+  Easing,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Importamos Ionicons
+import { Ionicons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -24,7 +24,7 @@ type Slide = {
   id: string;
   type: 'logos' | 'image';
   title: string;
-  image?: ImageSourcePropType; // La imagen es opcional
+  image?: ImageSourcePropType;
 };
 
 // --- Datos de los slides (sin cambios) ---
@@ -47,7 +47,7 @@ const OnboardingSlide = ({ item }: { item: Slide }) => {
         <>
           <Image source={item.image} style={styles.slideImage} />
           <Text style={styles.title}>{item.title}</Text>
-          
+
           {item.id === '3' && (
             <Link href="/(auth)" asChild>
               <TouchableOpacity style={styles.button}>
@@ -62,24 +62,20 @@ const OnboardingSlide = ({ item }: { item: Slide }) => {
 };
 
 export default function OnboardingScreen() {
-  // --- AÑADIDO: Estado para saber el slide actual ---
   const [currentIndex, setCurrentIndex] = useState(0);
-  // --- AÑADIDO: Ref para la animación ---
   const translateYAnim = useRef(new Animated.Value(0)).current;
 
-  // --- AÑADIDO: Animación de la flecha ---
   useEffect(() => {
-    // Definimos la animación
     const animation = Animated.loop(
       Animated.sequence([
         Animated.timing(translateYAnim, {
-          toValue: -10, // Sube 10px
+          toValue: -10,
           duration: 700,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
         Animated.timing(translateYAnim, {
-          toValue: 0, // Baja a 0
+          toValue: 0,
           duration: 700,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
@@ -87,14 +83,10 @@ export default function OnboardingScreen() {
       ])
     );
     
-    // Inicia la animación
     animation.start();
+    return () => animation.stop();
+  }, []);
 
-    // Detiene la animación cuando el componente se desmonta
-    return () => animation.stop(); 
-  }, []); // El array vacío asegura que esto solo se ejecute una vez
-
-  // --- AÑADIDO: Función para actualizar el índice ---
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: any[] }) => {
     if (viewableItems.length > 0) {
       setCurrentIndex(viewableItems[0].index);
@@ -113,12 +105,10 @@ export default function OnboardingScreen() {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
-        onViewableItemsChanged={onViewableItemsChanged} // Añadido
-        viewabilityConfig={viewabilityConfig}       // Añadido
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
       />
 
-      {/* --- AÑADIDO: FLECHA DESLIZANTE (CONDICIONAL) --- */}
-      {/* Solo se muestra si NO estamos en la última slide */}
       {currentIndex < slides.length - 1 && (
         <Animated.View style={[styles.swipeIndicator, { transform: [{ translateY: translateYAnim }] }]}>
           <Text style={styles.swipeText}>Desliza para continuar</Text>
@@ -129,21 +119,21 @@ export default function OnboardingScreen() {
   );
 }
 
-// --- ESTILOS (AÑADIMOS LOS DE LA FLECHA AL FINAL) ---
+// --- ESTILOS (ACTUALIZADO: LOGOS MÁS GRANDES) ---
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F7F8FA' },
   slide: { width: width, flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40 },
-  logo: { width: 150, height: 150, resizeMode: 'contain', marginBottom: 20, borderRadius: 25 },
+  // 👇 CAMBIO AQUÍ: aumentamos width, height y marginBottom
+  logo: { width: 180, height: 180, resizeMode: 'contain', marginBottom: 30, borderRadius: 25 },
   slideImage: { width: '100%', height: 300, resizeMode: 'cover', borderRadius: 20, marginBottom: 40 },
   title: { fontSize: 20, fontWeight: '500', color: '#34495E', textAlign: 'center', marginVertical: 40 },
   button: { backgroundColor: '#3498DB', paddingVertical: 18, borderRadius: 30, alignItems: 'center', marginTop: 20, width: '100%' },
   buttonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
 
-  // --- AÑADIDO: Estilos de la flecha deslizante ---
   swipeIndicator: {
-    position: 'absolute', // Posición fija sobre el FlatList
-    bottom: 50, // A 50px del fondo
-    alignSelf: 'center', // Centrado horizontalmente
+    position: 'absolute',
+    bottom: 50,
+    alignSelf: 'center',
     alignItems: 'center',
   },
   swipeText: {

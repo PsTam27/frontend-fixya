@@ -64,7 +64,8 @@ export default function EstadoSolicitudScreen() {
       <View style={styles.supportBox}>
         <Text style={styles.supportTitle}>La seguridad de nuestros clientes es primordial para nuestra empresa</Text>
         <Text style={styles.supportText}>Si necesitas ayuda con esta solicitud o estás presentando un problema con el trabajador contactanos y te atenderemos a la brevedad.</Text>
-        <TouchableOpacity style={styles.supportButton}>
+        <TouchableOpacity style={styles.supportButton}
+          onPress={() => router.push(`/soporte-solicitud/${id}`)} >
           <Text style={styles.supportButtonText}>Soporte</Text>
         </TouchableOpacity>
       </View>

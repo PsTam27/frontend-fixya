@@ -1,161 +1,210 @@
-// 🎯 ARCHIVO: app/resumen-solicitud/[id].tsx (CON NAVEGACIÓN A PERFIL MAESTRO)
+// 🎯 ARCHIVO: app/estado-solicitud/[id].tsx (BOTÓN VOLVER CORREGIDO)
 
-import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
-import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
+import { 
+  StyleSheet, Text, View, SafeAreaView, 
+  TouchableOpacity, ScrollView, Image, Platform, Pressable
+} from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons'; 
 
-export default function ResumenSolicitudScreen() {
+export default function EstadoSolicitudScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams(); 
 
   // --- Datos de ejemplo ---
-  // 👇 NECESITAS OBTENER EL ID DEL MAESTRO ASIGNADO A ESTA SOLICITUD (ej: 'maestro123')
-  const maestroId = 'maestro123'; // Reemplaza esto con el ID real
-
-  const solicitud = {
-      titulo: 'Mueble de cocina',
-      trabajadorNombre: 'Esteban Tamayo', // Nombre del trabajador
-      fechaEntrega: '20/09/2025',
-      direccionCompleta: 'Calle las rosas 37, Viña del Mar.',
-      descripcionCorta: 'Necesito un mueble de cocina para mi casa, que sea de 2 puertas y ..',
-      // ... otros datos de la solicitud
+  const estado = {
+    estado: 'Aceptado',
+    fotos: [
+      'https://placehold.co/80x80/grey/white?text=Foto+1',
+      'https://placehold.co/80x80/grey/white?text=Foto+2'
+    ],
+    notas: 'Se realizó la evaluación para la confección de mueble de cocina..',
+    estadoEntrega: 'A tiempo',
   };
-  
+
+  const [isNotasExpanded, setIsNotasExpanded] = useState(false);
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Configura la barra de título con la flecha de atrás */}
-      <Stack.Screen 
-        options={{ 
-          headerShown: true, 
-          title: 'Resumen de solicitud',
-          headerShadowVisible: false,
-          headerStyle: { backgroundColor: 'white' }
-        }} 
-      />
+      
+      {/* --- HEADER MANUAL CORREGIDO --- */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity 
+          style={styles.backButton} // Estilo actualizado
+          onPress={() => router.back()} // La función es correcta
+        >
+         
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Estado de solicitud</Text>
+        {/* Espaciador para centrar el título correctamente */}
+        <View style={styles.headerSpacer} /> 
+      </View>
       
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>{solicitud.titulo}</Text>
-        <Text style={styles.info}>
-          <Text style={styles.infoLabel}>Trabajador a cargo: </Text>
-          {solicitud.trabajadorNombre}
-        </Text>
-        <Text style={styles.info}>
-          <Text style={styles.infoLabel}>Fecha entrega: </Text>
-          {solicitud.fechaEntrega}
-        </Text>
-        <Text style={styles.info}>
-          <Text style={styles.infoLabel}>Dirección: </Text>
-          {solicitud.direccionCompleta}
-        </Text>
-        
-        {/* Placeholder del Mapa */}
-        <View style={styles.mapPlaceholder}>
-          <Text style={styles.mapText}>[Aquí va el componente de Mapa]</Text>
+       {/* ... (el resto de tu contenido) ... */}
+       <View style={styles.infoSection}>
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Estado:</Text>
+            <Text style={styles.value}>{estado.estado}</Text>
+          </View>
+          <Text style={styles.label}>Fotos de trabajo:</Text>
+          <View style={styles.photosContainer}>
+            {estado.fotos.map((uri, index) => (
+              <Image key={index} source={{ uri }} style={styles.photo} />
+            ))}
+          </View>
+          <Text style={styles.label}>Notas de trabajador:</Text>
+          <Text 
+            style={styles.value}
+            numberOfLines={isNotasExpanded ? undefined : 2}
+            ellipsizeMode="tail"
+          >
+            {estado.notas}
+            <Text style={styles.verMas} onPress={() => setIsNotasExpanded(!isNotasExpanded)}>
+              {isNotasExpanded ? ' Ver menos' : ' Ver más'}
+            </Text>
+          </Text>
+          <View style={styles.deliveryStatus}>
+            <Text style={styles.label}>Estado de entrega: </Text>
+            <Text style={styles.value}>{estado.estadoEntrega} </Text>
+            <Ionicons name="checkmark-circle" size={20} color="#3498DB" />
+          </View>
         </View>
-
-        <Text style={styles.infoLabel}>Descripción:</Text>
-        <Text style={styles.info}>
-          {solicitud.descripcionCorta}
-          <Text style={styles.verMas}> Ver más</Text>
-        </Text>
-
       </ScrollView>
 
-      {/* Botones fijos al final */}
-      <View style={styles.footer}>
-        <TouchableOpacity 
-          style={styles.buttonSolid}
-          onPress={() => router.push(`/estado-solicitud/${id}`)} 
-          
-        >
-          <Text style={styles.buttonText}>Consultar estado</Text>
-        </TouchableOpacity>
-        
-        {/* 👇 AQUÍ ESTÁ EL CAMBIO 👇 */}
-        <TouchableOpacity 
-          style={styles.buttonOutline}
-          // Navega a la ruta dinámica del perfil del maestro usando su ID
-          onPress={() => router.push(`/maestro-profile/${maestroId}`)} 
-        >
-          <Text style={styles.buttonTextOutline}>Consultar perfil de trabajador</Text>
+      {/* --- Tarjeta de Soporte (fija abajo) --- */}
+      <View style={styles.supportBox}>
+       {/* ... (contenido de la tarjeta de soporte) ... */}
+       <Text style={styles.supportTitle}>La seguridad de nuestros clientes es primordial para nuestra empresa</Text>
+        <Text style={styles.supportText}>Si necesitas ayuda con esta solicitud o estás presentando un problema con el trabajador contactanos y te atenderemos a la brevedad.</Text>
+        <TouchableOpacity style={styles.supportButton}>
+          <Text style={styles.supportButtonText}>Soporte</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
 
-// --- ESTILOS (Sin cambios estructurales) ---
+// --- ESTILOS CORREGIDOS ---
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'white' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#F7F8FA' 
+  },
+  // --- ESTILOS PARA EL HEADER MANUAL ---
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', // Mantenemos space-between
+    paddingHorizontal: 15, // Padding horizontal
+    paddingVertical: 10,
+    backgroundColor: '#F7F8FA', 
+  },
+  backButton: {
+    padding: 10, // Aumentamos el padding para un área táctil más grande
+  },
+  headerTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#333',
+    // Se centrará gracias al espaciador
+  },
+  headerSpacer: { // Espaciador invisible
+    width: 48, // (Icono 28 + padding 10*2 = 48)
+  },
+  // --- FIN ESTILOS HEADER ---
   scrollContent: { 
     padding: 20,
-    paddingBottom: 150, 
+    paddingTop: 10,
+    paddingBottom: 250, 
   },
-  title: { 
-    fontSize: 22, 
-    fontWeight: 'bold', 
-    marginBottom: 15,
-    color: '#2C3E50',
+  infoSection: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
   },
-  info: { 
-    fontSize: 16, 
-    color: '#34495E', 
-    marginBottom: 12,
-    lineHeight: 22,
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20, 
   },
-  infoLabel: {
+  label: {
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#2C3E50',
+    marginRight: 8,
   },
-  mapPlaceholder: {
-    height: 200,
-    backgroundColor: '#EAECEE',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  mapText: {
-    color: '#7F8C8D',
+  value: {
     fontSize: 16,
+    color: '#34495E',
+    lineHeight: 22, 
+  },
+  photosContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    marginVertical: 10,
+    marginBottom: 20,
+  },
+  photo: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    backgroundColor: '#EAECEE',
   },
   verMas: {
     color: '#3498DB',
     fontWeight: 'bold',
   },
-  footer: {
+  deliveryStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20, 
+  },
+  supportBox: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: 'white',
-    padding: 20,
-    paddingBottom: 30, 
-    borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
-    gap: 15,
+    padding: 30,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 10,
+    alignItems: 'center',
   },
-  buttonSolid: {
+  supportTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+    color: '#2C3E50',
+  },
+  supportText: {
+    fontSize: 14,
+    color: '#555',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  supportButton: {
     backgroundColor: '#3498DB',
     paddingVertical: 16,
     borderRadius: 30,
     alignItems: 'center',
+    width: '100%',
   },
-  buttonText: {
+  supportButtonText: {
     color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  buttonOutline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: '#3498DB',
-    paddingVertical: 16,
-    borderRadius: 30,
-    alignItems: 'center',
-  },
-  buttonTextOutline: {
-    color: '#3498DB',
     fontSize: 16,
     fontWeight: 'bold',
   },
