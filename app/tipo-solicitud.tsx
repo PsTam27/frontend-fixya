@@ -19,7 +19,7 @@ export default function TipoSolicitudScreen() {
 
     const pathname = tipo === 'arreglo' 
       ? '/formulario-arreglos' 
-      : '/formulario-remodelaciones'; // Asegúrate de que esta ruta exista
+      : '/remodelaciones-form'; // Asegúrate de que esta ruta exista
 
     // Navegamos al formulario y le pasamos los datos del maestro
     router.push({

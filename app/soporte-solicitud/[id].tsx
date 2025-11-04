@@ -1,28 +1,37 @@
-// 🎯 ARCHIVO: app/soporte-solicitud/[id].tsx (NUEVO)
+// 🎯 ARCHIVO: app/soporte-solicitud/[id].tsx (CON MODAL DE ÉXITO)
 
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // Importamos useState
 import {
   StyleSheet, Text, View, SafeAreaView, TouchableOpacity,
-  TextInput, ScrollView, Platform, KeyboardAvoidingView, Alert
+  TextInput, ScrollView, Platform, KeyboardAvoidingView,
+  Modal, Pressable // 1. Importamos Modal y Pressable
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function SoporteSolicitudScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams(); // Obtenemos el ID de la solicitud por si lo necesitas
+  const { id } = useLocalSearchParams(); 
 
   // Estados para el formulario
-  const [problema, setProblema] = useState('Problemas con trabajador'); // Estado para el dropdown
+  const [problema, setProblema] = useState('Problemas con trabajador');
   const [descripcion, setDescripcion] = useState('');
+  
+  // 2. Estado para el modal de éxito
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleEnviar = () => {
     console.log('Enviando ticket de soporte:', { solicitudId: id, problema, descripcion });
     // Lógica para enviar el ticket a tu backend...
     
-    Alert.alert("Soporte", "Tu mensaje ha sido enviado.", [
-      { text: "OK", onPress: () => router.back() } // Vuelve a la pantalla anterior
-    ]);
+    // 3. Abrimos el modal en lugar de la alerta
+    setModalVisible(true);
+  };
+
+  const handleVolverAlInicio = () => {
+    setModalVisible(false); // Cierra el modal
+    // Navega de vuelta al inicio de la app del usuario (ajusta la ruta si es otra)
+    router.replace('/(tabs)/'); 
   };
 
   return (
@@ -42,14 +51,12 @@ export default function SoporteSolicitudScreen() {
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.iconContainer}>
+          {/* ... (Contenido del formulario: Icono, Títulos, Dropdown, Textarea) ... */}
+           <View style={styles.iconContainer}>
             <Ionicons name="help-circle-outline" size={60} color="#3498DB" />
           </View>
-          
           <Text style={styles.title}>¿Necesitas ayuda?</Text>
           <Text style={styles.subtitle}>Selecciona una opción de la lista para poder continuar.</Text>
-
-          {/* Campo Dropdown (Simulado) */}
           <Text style={styles.label}>Problemas con trabajador</Text>
           <TouchableOpacity 
             style={styles.dropdownButton} 
@@ -58,8 +65,6 @@ export default function SoporteSolicitudScreen() {
             <Text style={styles.dropdownText}>{problema}</Text>
             <Ionicons name="chevron-down-outline" size={20} color="#555" />
           </TouchableOpacity>
-
-          {/* Campo Descripción */}
           <Text style={styles.label}>Describe el problema que estás presentando</Text>
           <TextInput
             style={styles.textArea}
@@ -78,16 +83,51 @@ export default function SoporteSolicitudScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+
+      {/* --- 4. MODAL DE SOLICITUD ENVIADA --- */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)} // Para el botón 'atrás' de Android
+      >
+        <Pressable 
+          style={styles.modalOverlay} 
+          onPress={() => setModalVisible(false)} // No permitir cerrar tocando fuera
+        >
+          <Pressable 
+            style={styles.modalContent} 
+            onPress={() => {}} // Evita cierre al tocar dentro
+          >
+            {/* Icono de Éxito */}
+            <Ionicons name="checkmark-circle-outline" size={70} color="#27AE60" style={{ marginBottom: 15 }} /> 
+            
+            <Text style={styles.modalTitle}>Solicitud enviada</Text>
+            <Text style={styles.modalSubtitle}>Tu mensaje ha sido recibido por el equipo de soporte.</Text>
+
+            <TouchableOpacity 
+              style={styles.modalButtonSolid} 
+              onPress={handleVolverAlInicio} // Llama a la función de volver al inicio
+            >
+              <Text style={styles.modalButtonTextSolid}>Volver al inicio</Text>
+            </TouchableOpacity>
+
+            {/* No hay botón "Cancelar" en este modal de éxito */}
+
+          </Pressable>
+        </Pressable>
+      </Modal>
+      
     </SafeAreaView>
   );
 }
 
+// --- ESTILOS (Añadidos estilos de modal) ---
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: '#F7F8FA' // Fondo gris claro
+    backgroundColor: '#F7F8FA' 
   },
-  // --- Header Manual ---
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -96,93 +136,67 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: '#F7F8FA',
   },
-  backButton: {
-    padding: 10, 
-  },
-  headerTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#333',
-  },
-  headerSpacer: {
-    width: 48, 
-  },
-  // --- Contenido ---
+  backButton: { padding: 10, },
+  headerTitle: { fontSize: 17, fontWeight: '600', color: '#333', },
+  headerSpacer: { width: 48, },
   scrollContent: {
     padding: 20,
-    paddingBottom: 120, // Espacio para el botón
+    paddingBottom: 120, 
   },
-  iconContainer: {
+  iconContainer: { alignItems: 'center', marginVertical: 15, },
+  title: { fontSize: 20, fontWeight: 'bold', color: '#2C3E50', textAlign: 'center', marginBottom: 10, },
+  subtitle: { fontSize: 16, color: '#555', textAlign: 'center', marginBottom: 30, },
+  label: { fontSize: 14, color: '#555', marginBottom: 8, fontWeight: '500', },
+  dropdownButton: { backgroundColor: 'white', borderRadius: 8, borderWidth: 1, borderColor: '#EAECEE', paddingHorizontal: 15, paddingVertical: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 25, },
+  dropdownText: { fontSize: 16, color: '#333', },
+  textArea: { backgroundColor: 'white', borderRadius: 8, borderWidth: 1, borderColor: '#EAECEE', padding: 15, fontSize: 16, minHeight: 120, textAlignVertical: 'top', color: '#333', },
+  footer: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#F7F8FA', padding: 20, paddingBottom: Platform.OS === 'ios' ? 30 : 20, borderTopWidth: 1, borderTopColor: '#E0E0E0', },
+  button: { backgroundColor: '#3498DB', paddingVertical: 16, borderRadius: 30, alignItems: 'center', },
+  buttonText: { color: 'white', fontSize: 16, fontWeight: 'bold', },
+
+  // --- 5. Estilos para el Modal ---
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 15,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   },
-  title: {
-    fontSize: 20,
+  modalContent: {
+    width: '85%',
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 25,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18, 
     fontWeight: 'bold',
     color: '#2C3E50',
+    marginBottom: 10, // Menos espacio
     textAlign: 'center',
-    marginBottom: 10,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#555',
-    textAlign: 'center',
-    marginBottom: 30,
-  },
-  label: {
+  modalSubtitle: { // Subtítulo añadido
     fontSize: 14,
     color: '#555',
-    marginBottom: 8,
-    fontWeight: '500',
-  },
-  dropdownButton: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#EAECEE',
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    textAlign: 'center',
     marginBottom: 25,
   },
-  dropdownText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  textArea: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#EAECEE',
-    padding: 15,
-    fontSize: 16,
-    minHeight: 120,
-    textAlignVertical: 'top',
-    color: '#333',
-  },
-  // --- Footer y Botón ---
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#F7F8FA',
-    padding: 20,
-    paddingBottom: Platform.OS === 'ios' ? 30 : 20,
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-  },
-  button: {
+  modalButtonSolid: { 
     backgroundColor: '#3498DB',
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderRadius: 30,
     alignItems: 'center',
+    width: '100%',
   },
-  buttonText: {
+  modalButtonTextSolid: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
+  // (Estilos de botón Cancelar no necesarios aquí)
 });

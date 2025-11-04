@@ -1,4 +1,4 @@
-// 🎯 ARCHIVO: app/estado-solicitud/[id].tsx (BOTÓN VOLVER CORREGIDO)
+// 🎯 ARCHIVO: app/estado-solicitud/[id].tsx (BOTONES CORREGIDOS)
 
 import React, { useState } from 'react';
 import { 
@@ -34,7 +34,8 @@ export default function EstadoSolicitudScreen() {
           style={styles.backButton} // Estilo actualizado
           onPress={() => router.back()} // La función es correcta
         >
-         
+         {/* 👇 Faltaba el ícono aquí 👇 */}
+         <Ionicons name="arrow-back-outline" size={28} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Estado de solicitud</Text>
         {/* Espaciador para centrar el título correctamente */}
@@ -75,10 +76,14 @@ export default function EstadoSolicitudScreen() {
 
       {/* --- Tarjeta de Soporte (fija abajo) --- */}
       <View style={styles.supportBox}>
-       {/* ... (contenido de la tarjeta de soporte) ... */}
        <Text style={styles.supportTitle}>La seguridad de nuestros clientes es primordial para nuestra empresa</Text>
         <Text style={styles.supportText}>Si necesitas ayuda con esta solicitud o estás presentando un problema con el trabajador contactanos y te atenderemos a la brevedad.</Text>
-        <TouchableOpacity style={styles.supportButton}>
+        
+        {/* 👇 AQUÍ ESTÁ LA RUTA AÑADIDA 👇 */}
+        <TouchableOpacity 
+          style={styles.supportButton}
+          onPress={() => router.push(`/soporte-solicitud/${id}`)} // Navega a la pantalla de soporte
+        >
           <Text style={styles.supportButtonText}>Soporte</Text>
         </TouchableOpacity>
       </View>
@@ -96,21 +101,20 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Mantenemos space-between
-    paddingHorizontal: 15, // Padding horizontal
+    justifyContent: 'space-between', 
+    paddingHorizontal: 15, 
     paddingVertical: 10,
     backgroundColor: '#F7F8FA', 
   },
   backButton: {
-    padding: 10, // Aumentamos el padding para un área táctil más grande
+    padding: 10, 
   },
   headerTitle: {
     fontSize: 17,
     fontWeight: '600',
     color: '#333',
-    // Se centrará gracias al espaciador
   },
-  headerSpacer: { // Espaciador invisible
+  headerSpacer: { 
     width: 48, // (Icono 28 + padding 10*2 = 48)
   },
   // --- FIN ESTILOS HEADER ---
