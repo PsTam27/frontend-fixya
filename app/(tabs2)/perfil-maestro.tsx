@@ -1,4 +1,4 @@
-// 🎯 ARCHIVO: app/(tabs2)/perfil-maestro.tsx (CON LOGOUT CORREGIDO)
+// 🎯 ARCHIVO: app/(tabs2)/perfil-maestro.tsx (EDITADO)
 
 import React, { useState } from 'react'; 
 import { 
@@ -23,6 +23,7 @@ const ListItem = ({ icon, text, onPress }: { icon: any; text: string; onPress?: 
 
 // --- Datos de ejemplo (basados en la foto) ---
 const maestroInfo = {
+  id: 'maestro123', // 👈 1. ID AÑADIDO (para pasar a la siguiente pantalla)
   nombre: 'Esteban',
   apellido: 'Tamayo',
   rol: 'Carpintero',
@@ -30,7 +31,7 @@ const maestroInfo = {
   miembroDesde: '20/06/2020',
 };
 
-// --- Opciones del menú (ruta de logout eliminada) ---
+// --- Opciones del menú (Tus rutas personalizadas) ---
 const menuOptions = [
   { icon: 'wallet-outline', text: 'Mi billetera', route: '/informacion-bancaria-maestro'},
   { icon: 'document-attach-outline', text: 'Documentos', route: '/documentos-maestro' },
@@ -49,7 +50,6 @@ export default function PerfilMaestroScreen() {
     console.log('Cerrando sesión...');
     // Lógica para limpiar tokens/storage...
     
-    // 👇 CAMBIO AQUÍ: Redirige a la raíz de la app (app/index.tsx)
     router.replace('/'); 
   };
   
@@ -92,7 +92,18 @@ export default function PerfilMaestroScreen() {
           </Text>
           <Text style={styles.statsSubText}>Miembro desde {maestroInfo.miembroDesde}</Text>
           <Text style={styles.qualityText}>Calidad alta ⭐</Text>
-          <TouchableOpacity onPress={() => console.log('Ver reseñas')}>
+          
+          {/* 👇 2. ONPRESS ACTUALIZADO 👇 */}
+          <TouchableOpacity 
+            onPress={() => router.push({
+              // Ruta consistente con tus otras rutas (ej. documentos-maestro)
+              pathname: '/reseñas-maestro', 
+              params: { 
+                maestroId: maestroInfo.id, 
+                maestroNombre: maestroInfo.nombre 
+              }
+            })}
+          >
             <Text style={styles.reviewLink}>Ver reseñas</Text>
           </TouchableOpacity>
         </View>
