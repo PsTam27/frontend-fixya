@@ -32,8 +32,8 @@ const maestroInfo = {
 
 // --- Opciones del menú (ruta de logout eliminada) ---
 const menuOptions = [
-  { icon: 'wallet-outline', text: 'Mi billetera', route: '/(maestro)/informacion-bancaria'},
-  { icon: 'document-attach-outline', text: 'Documentos', route: '/(maestro)/documentos' },
+  { icon: 'wallet-outline', text: 'Mi billetera', route: '/informacion-bancaria-maestro'},
+  { icon: 'document-attach-outline', text: 'Documentos', route: '/documentos-maestro' },
   { icon: 'settings-outline', text: 'Configuración' },
   { icon: 'lock-closed-outline', text: 'Privacidad y seguridad' },
   { icon: 'log-out-outline', text: 'Cerrar sesión' }, 

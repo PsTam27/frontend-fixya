@@ -157,7 +157,15 @@ export default function DetallesTrabajoMaestroScreen() {
           <Text style={styles.durationText}>{trabajo.duration}</Text>
           <Text style={styles.priceText}>{trabajo.price}</Text>
 
-        
+          {/* --- BOTÓN CONDICIONAL: Aceptar --- */}
+          {!isAcceptedJob && (
+            <TouchableOpacity
+              style={styles.acceptButton}
+              onPress={handleAcceptJob}
+            >
+              <Text style={styles.acceptButtonText}>Aceptar</Text>
+            </TouchableOpacity>
+          )}
 
         </ScrollView>
       </KeyboardAvoidingView>
