@@ -1,7 +1,8 @@
 // 🎯 ARCHIVO: app/estado-solicitud/[id].tsx (NUEVO)
 
 import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, Pressable, ScrollView, Image } from 'react-native';
+import {SafeAreaView} from "react-native-safe-area-context";
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -66,9 +67,9 @@ export default function EstadoSolicitudScreen() {
       <View style={styles.supportBox}>
         <Text style={styles.supportTitle}>La seguridad de nuestros clientes es primordial para nuestra empresa</Text>
         <Text style={styles.supportText}>Si necesitas ayuda con esta solicitud o estás presentando un problema con el trabajador contactanos y te atenderemos a la brevedad.</Text>
-        <TouchableOpacity style={styles.supportButton}>
+        <Pressable style={styles.supportButton}>
           <Text style={styles.supportButtonText}>Soporte</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </SafeAreaView>
   );

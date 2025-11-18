@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TextInput, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { StyleSheet, Text, TextInput, Pressable, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import {SafeAreaView} from "react-native-safe-area-context";
 
 // --- ¡¡¡ATENCIÓN!!! DEBES CAMBIAR ESTA IP ---
 // Busca tu IP local como se explica más abajo. No uses 'localhost'.
@@ -47,12 +48,12 @@ export default function RegistrationFormScreen({ route, navigation }) {
           <TextInput style={styles.input} placeholder="Nombre Completo" value={name} onChangeText={setName} placeholderTextColor="#999" />
           <TextInput style={styles.input} placeholder="Correo Electrónico" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" placeholderTextColor="#999" />
           <TextInput style={styles.input} placeholder="Contraseña" value={password} onChangeText={setPassword} secureTextEntry placeholderTextColor="#999" />
-          <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
+          <Pressable style={styles.button} onPress={handleRegister} disabled={loading}>
             {loading ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>Registrarse</Text>}
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          </Pressable>
+          <Pressable onPress={() => navigation.goBack()}>
             <Text style={styles.backLink}>Volver a la selección</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

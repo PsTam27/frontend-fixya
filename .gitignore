@@ -1,28 +1,23 @@
-# Archivos compilados y binarios de Go
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-bin/
-/vendor/
+node_modules/
+.expo/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
 
-# Archivos del sistema
+
+
+
+ios
+android
+
+# macOS
 .DS_Store
-Thumbs.db
 
-# --- Archivos de Frontend (React Native / Expo) ---
-
-# Dependencias de Node (muy importante)
-frontend/node_modules/
-
-# Archivos de caché y configuración local de Expo
-frontend/.expo/
-
-# Logs de Node
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
-
-# Archivos de entorno (contienen secretos)
-.env
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
