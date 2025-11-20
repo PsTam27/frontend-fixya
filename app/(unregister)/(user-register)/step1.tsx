@@ -1,6 +1,16 @@
-import React, { useState, useTransition }          from "react"
-import AntDesign
-                                                   from "@expo/vector-icons/AntDesign"
+import { errorColor } from "@/constants/theme"
+import { registerUserSchema } from "@/models/user/payload"
+import { UserTypeEnum } from "@/models/user/response"
+import {
+  passwordSchema
+} from "@/models/utils/password"
+import AntDesign from "@expo/vector-icons/AntDesign"
+import {
+  zodResolver
+} from "@hookform/resolvers/zod"
+import RNDateTimePicker from "@react-native-community/datetimepicker"
+import React, { useState } from "react"
+import { Controller, useForm } from "react-hook-form"
 import {
   KeyboardAvoidingView,
   Platform,
@@ -9,35 +19,23 @@ import {
   Text,
   TextInput,
   View
-}                                                  from "react-native"
-import {
-  SafeAreaView
-}                                                  from "react-native-safe-area-context"
-import {
-  zodResolver
-}                                                  from "@hookform/resolvers/zod"
-import { Controller, useForm }                     from "react-hook-form"
-import { RegisterUserPayload, registerUserSchema } from "@/models/user/payload"
-import { errorColor }                              from "@/constants/theme"
-import RNDateTimePicker
-                                                   from "@react-native-community/datetimepicker"
-import {
-  passwordSchema
-}                                                  from "@/models/utils/password"
-import { z }                                       from "zod"
-import { UserTypeEnum }                            from "@/models/user/response"
+} from "react-native"
 import {
   KeyboardAwareScrollView
-}                                                  from "react-native-keyboard-aware-scroll-view"
+} from "react-native-keyboard-aware-scroll-view"
+import {
+  SafeAreaView
+} from "react-native-safe-area-context"
+import { z } from "zod"
 
 
-import { useQuery }      from "@tanstack/react-query"
-import { Dropdown }      from "react-native-element-dropdown"
+import { useAuth } from "@/hooks/auth_context"
+import { api } from "@/lib/api"
 import { regionsOption } from "@/lib/tanstack_query"
-import { api }           from "@/lib/api"
-import { Comuna }        from "@/models/location/response"
-import { useAuth }       from "@/hooks/auth_context"
-import { useRouter }     from "expo-router"
+import { Comuna } from "@/models/location/response"
+import { useQuery } from "@tanstack/react-query"
+import { useRouter } from "expo-router"
+import { Dropdown } from "react-native-element-dropdown"
 
 export default function UserRegisterStep1() {
   const {
@@ -63,6 +61,7 @@ export default function UserRegisterStep1() {
       bank_identity: "199733877",
       calle        : "1",
       comuna       : "1",
+      region : "1",
       date_birth   : "2025-11-17T10:38:00-03:00",
       user_type    : UserTypeEnum.Client,
       password     : "Qwerty!12345",

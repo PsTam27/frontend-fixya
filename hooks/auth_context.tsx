@@ -1,30 +1,30 @@
-import React, {
-  createContext,
-  type ReactNode,
-  useContext,
-  useEffect,
-  useState
-}                                             from "react"
-import { User, UserTypeEnum, userTypeSchema } from "@/models/user/response"
+import { api } from "@/lib/api"
+import { userFromJson } from "@/models/user/mapper"
 import {
   LoginUserPayload,
   RegisterUserPayload,
   UpdateUserPayload
-}                                             from "@/models/user/payload"
-import { Password }                           from "@/models/utils/password"
-import * as SecureStore                       from "expo-secure-store"
-import { jwtDecode }                          from "jwt-decode"
-import { api }                                              from "@/lib/api"
+} from "@/models/user/payload"
+import { User, UserTypeEnum, userTypeSchema } from "@/models/user/response"
+import { Password } from "@/models/utils/password"
+import { workerFromJson } from "@/models/worker/mapper"
 import {
   RegisterWorkerPayload,
   UpdateWorkerDetailPayload
 } from "@/models/worker/payload"
 import {
   WorkerDetail
-}                                                           from "@/models/worker/response"
-import { useRouter }    from "expo-router"
-import { userFromJson } from "@/models/user/mapper"
-import { workerFromJson }                     from "@/models/worker/mapper"
+} from "@/models/worker/response"
+import { useRouter } from "expo-router"
+import * as SecureStore from "expo-secure-store"
+import { jwtDecode } from "jwt-decode"
+import React, {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useState
+} from "react"
 
 const TOKEN_KEY  = "my-jwt-token"
 const USER_KEY   = "my-user-data"
@@ -158,7 +158,7 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
   const update = async ( payload: UpdateUserPayload ) => {
     try {
       const response = await api.put( "/user/update", payload )
-      const userData = userFromJson(response.data)
+      const userData = userFromJson(response.data.data)
       await SecureStore.setItemAsync( USER_KEY, JSON.stringify( userData ) )
       setUser( userData )
       return true
@@ -202,6 +202,7 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
   const register = async ( payload: RegisterUserPayload,
     password: Password ) => {
     try {
+      console.log(payload)
       const response                               = await api.post(
         "/user/register", {
           ...payload,

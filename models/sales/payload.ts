@@ -1,8 +1,8 @@
-import { z } from "zod"
 import {
   requestImageTypeSchema,
   requestStatusTypeSchema
-}            from "@/models/sales/response"
+} from "@/models/sales/response"
+import { z } from "zod"
 
 export const registerReviewSchema = z.object( {
   rating           : z.int(),
@@ -15,6 +15,7 @@ export const registerReviewSchema = z.object( {
 export type RegisterReviewPayload = z.infer<typeof registerReviewSchema>
 
 export const requestImagePayloadSchema = z.object( {
+  name: z.string(),
   url : z.string(),
   type: requestImageTypeSchema
 } )
