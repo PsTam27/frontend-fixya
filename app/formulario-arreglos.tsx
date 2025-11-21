@@ -2,6 +2,7 @@
 
 import { Checkbox } from "@/components/ui/checkbox"
 import { errorColor } from "@/constants/theme"
+import { useAuth } from "@/hooks/auth_context"
 import { cloudinary } from "@/lib/api"
 import { specialitiesOption } from "@/lib/tanstack_query"
 import { registerRequestSchema, RequestImagePayload } from "@/models/sales/payload"
@@ -11,9 +12,7 @@ import AntDesign from "@expo/vector-icons/AntDesign"
 import { zodResolver } from "@hookform/resolvers/zod"
 import RNDateTimePicker from "@react-native-community/datetimepicker"
 import { useQuery } from "@tanstack/react-query"
-import {
-  upload
-} from "cloudinary-react-native"
+import { upload } from "cloudinary-react-native"
 import * as DocumentPicker from "expo-document-picker"
 import * as FileSystem from "expo-file-system/legacy"
 import { Image } from "expo-image"
@@ -44,6 +43,7 @@ import { SafeAreaView } from "react-native-safe-area-context"; // Necesario para
 // AGREGAR PARA QUE SE MANDE EL BACKEND
 export default function FormularioArreglosScreen() {
   const router = useRouter()
+  const {createRequest }         = useAuth()
 
   const {
           control,
@@ -52,7 +52,8 @@ export default function FormularioArreglosScreen() {
           formState: { errors },
             watch
           } = useForm( {
-      resolver     : zodResolver(registerRequestSchema)
+      resolver     : zodResolver(registerRequestSchema),
+      mode: "onChange",
       } )
 
   const {
@@ -73,7 +74,6 @@ export default function FormularioArreglosScreen() {
     }
   ) ) || []
 
-
   const [submiting, startSubmitting]        = useState( false )
 
   const [showDatePicker, setShowDatePicker] = useState( false )
@@ -82,11 +82,16 @@ export default function FormularioArreglosScreen() {
       []
 
   const onSubmit                     = async ( data: any ) => {
-    console.log( "Submitting worker registration with data:", data )
+    startSubmitting( true )
+    //console.log( "Submitting worker registration with data:", data )
+    console.log(data.speciality_id)
+    data.speciality_id = Number(data.speciality_id)
     if ( imagesValues.length === 0 || imagesValues.length >= 3) {
+      console.log("Hay muchas imagenes xd")
       return
     }
-    startSubmitting( true )
+    
+
     const uploadedImages: RequestImagePayload[] = []
     for ( const img of data.images ) {
       await upload( cloudinary, {
@@ -112,11 +117,14 @@ export default function FormularioArreglosScreen() {
       images: uploadedImages
     }
 
+    await createRequest(n)
+
     startSubmitting( false )
+
 
     router.push( {
       pathname: "/resumen-solicitud-final",
-      //params  : formData
+      params  : n
     } )
   }
 
@@ -196,7 +204,7 @@ export default function FormularioArreglosScreen() {
             name="description"
             render={ ( { field: { onChange, onBlur, value } } ) => (
               <TextInput
-                editable={ submiting }
+                editable={ !submiting }
                 style={ styles.input } placeholder="Descripción del problema"
                 onBlur={ onBlur }
                 onChangeText={ onChange }
@@ -258,6 +266,22 @@ export default function FormularioArreglosScreen() {
 
         <Controller
             control={ control }
+            name="location_text"
+            render={ ( { field: { onChange, onBlur, value } } ) => (
+              <TextInput
+                editable={ !submiting }
+                style={ styles.input } placeholder="Dirección"
+                onBlur={ onBlur }
+                onChangeText={ onChange }
+                value={ value }
+                placeholderTextColor="#999"
+              />
+            ) }
+          />
+
+
+        <Controller
+            control={ control }
             name="ends_at"
             render={ ( { field: { onChange, value } } ) => {
               const dateValue = value ? new Date( value ) : undefined
@@ -302,13 +326,12 @@ export default function FormularioArreglosScreen() {
               style={ { color: errorColor } }>{ errors.ends_at.message }</Text> }
 
     <Pressable style={ styles.attachButton } onPress={ picker }>
-          <Text style={ styles.attachButtonText }>Adjunta acá tus
-            certificados</Text>
+          <Text style={ styles.attachButtonText }>Adjunta imagenes del problema</Text>
           <Text style={ styles.attachButtonIcon }>+</Text>
         </Pressable>
         { imagesValues.length === 0 ? <Text
           style={ { color: errorColor } }>
-          Por favor selecciona un tipo de hogar.
+          Por favor selecciona almenos una imagen.
         </Text> : null }
         { imagesValues.length > 0 ? imagesValues.map( ( c, i ) => (
             <View key={ c.url } style={ {
@@ -340,7 +363,7 @@ export default function FormularioArreglosScreen() {
       */}
         {/* Botón Siguiente fijo abajo */ }
         <View style={ styles.footer }>
-          <Pressable style={ styles.nextButton } onPress={ handleSubmit( onSubmit ) }>
+          <Pressable  disabled={ submiting} style={ styles.nextButton } onPress={ handleSubmit( onSubmit )}>
             <Text style={ styles.nextButtonText }>Siguiente</Text>
           </Pressable>
         </View>

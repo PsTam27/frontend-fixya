@@ -1,4 +1,5 @@
 import { api } from "@/lib/api"
+import { RegisterRequestPayload } from "@/models/sales/payload"
 import { userFromJson } from "@/models/user/mapper"
 import {
   LoginUserPayload,
@@ -47,6 +48,8 @@ interface AuthContextType {
   updateWorker( payload: UpdateWorkerDetailPayload ): Promise<boolean>
 
   hasAccess( type: UserTypeEnum ): Promise<boolean>
+
+  createRequest( payload: RegisterRequestPayload ): Promise<boolean>
 }
 
 
@@ -169,6 +172,30 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
     }
   }
 
+  const createRequest = async ( pre_payload: RegisterRequestPayload ) => {
+    try {
+      const payload = {
+      is_public: Boolean(pre_payload.is_public),
+      title: String(pre_payload.title),
+      description: String(pre_payload.description),
+      speciality_id: Number(pre_payload.speciality_id), // ← Convertir a número
+      value: Number(pre_payload.value),
+      ends_at: new Date(pre_payload.ends_at).toISOString(),
+      status: pre_payload.status,
+      location: String(pre_payload.location),
+      location_text: String(pre_payload.location_text),
+      images: pre_payload.images || [],
+      notes: pre_payload.notes || []
+    }
+      const response = await api.post( "/sale/request", payload )
+      return true
+    }
+    catch ( e ) {
+      console.error( "Error en update:", e )
+      return false
+    }
+  }
+
   const updateWorker = async ( payload: UpdateWorkerDetailPayload ) => {
     try {
       const response = await api.put( "/worker", payload )
@@ -234,7 +261,8 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
         logout,
         update,
         register,
-        hasAccess
+        hasAccess,
+        createRequest
       }
     }>
       { children }

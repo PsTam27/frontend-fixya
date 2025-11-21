@@ -9,7 +9,6 @@ export const specialitiesOption = {
     if ( response.status !== 200 ) {
       throw new Error( "Error fetching regions" )
     }
-    console.log(response.data.data)
     return await response.data.data as Speciality[]
   }
 }

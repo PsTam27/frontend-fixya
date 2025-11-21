@@ -1,5 +1,6 @@
 import {
   requestImageTypeSchema,
+  RequestStatusTypeEnum,
   requestStatusTypeSchema
 } from "@/models/sales/response"
 import { z } from "zod"
@@ -15,7 +16,15 @@ export const registerReviewSchema = z.object( {
 export type RegisterReviewPayload = z.infer<typeof registerReviewSchema>
 
 export const requestImagePayloadSchema = z.object( {
-  name: z.string(),
+  name: z.string()
+  .refine((val) => 
+      val.toLowerCase().endsWith('.jpg') ||
+      val.toLowerCase().endsWith('.jpeg') ||
+      val.toLowerCase().endsWith('.png') ||
+      val.toLowerCase().endsWith('.gif') ||
+      val.toLowerCase().endsWith('.webp'), {
+      message: "El archivo debe ser una imagen (jpg, jpeg, png, gif, webp)"
+    }),
   url : z.string(),
   type: requestImageTypeSchema
 } )
@@ -34,13 +43,13 @@ export const registerRequestSchema = z.object( {
   title        : z.string(),
   description  : z.string(),
   speciality_id: z.string(),
-  value        : z.number(),
+  value        : z.number().default(0),
   ends_at      : z.iso.datetime(),
-  status       : requestStatusTypeSchema,
-  location     : z.string(),
+  status       : requestStatusTypeSchema.default(RequestStatusTypeEnum.Pending),
+  location     : z.string().default(""),
   location_text: z.string(),
   images       : z.array( requestImagePayloadSchema ),
-  notes        : z.array( requestNotePayloadSchema )
+  notes        : z.array( requestNotePayloadSchema ).default([])
 } )
 
 export type RegisterRequestPayload = z.infer<typeof registerRequestSchema>
