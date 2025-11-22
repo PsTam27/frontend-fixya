@@ -1,4 +1,4 @@
-// 🎯 ARCHIVO: app/formulario-arreglos.tsx (CON CHECKBOX URGENTE)
+// 🎯 ARCHIVO: app/formulario-arreglos.tsx (AJUSTE VISUAL Y ESTILOS ORIGINALES)
 
 import { Checkbox } from "@/components/ui/checkbox"
 import { errorColor } from "@/constants/theme"
@@ -30,7 +30,7 @@ import {
 } from "react-native"
 import { Dropdown } from "react-native-element-dropdown"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
-import { SafeAreaView } from "react-native-safe-area-context"; // Necesario para el checkbox
+import { SafeAreaView } from "react-native-safe-area-context";
 //Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_API_TOKEN);
 
 
@@ -43,23 +43,23 @@ import { SafeAreaView } from "react-native-safe-area-context"; // Necesario para
 // AGREGAR PARA QUE SE MANDE EL BACKEND
 export default function FormularioArreglosScreen() {
   const router = useRouter()
-  const {createRequest }         = useAuth()
+  const {createRequest }          = useAuth()
 
   const {
-          control,
-          handleSubmit,
-          getValues,
-          formState: { errors },
-            watch
-          } = useForm( {
-      resolver     : zodResolver(registerRequestSchema),
+           control,
+           handleSubmit,
+           getValues,
+           formState: { errors },
+           watch
+           } = useForm( {
+      resolver       : zodResolver(registerRequestSchema),
       mode: "onChange",
       } )
 
   const {
-          append: appendImage,
-          remove: removeImage
-        } = useFieldArray<any>( {
+           append: appendImage,
+           remove: removeImage
+         } = useFieldArray<any>( {
     control,
     name: "images"
   } )
@@ -74,14 +74,14 @@ export default function FormularioArreglosScreen() {
     }
   ) ) || []
 
-  const [submiting, startSubmitting]        = useState( false )
+  const [submiting, startSubmitting]         = useState( false )
 
   const [showDatePicker, setShowDatePicker] = useState( false )
-  const imagesValues           = watch(
+  const imagesValues             = watch(
         "images" ) as RequestImagePayload[] ??
       []
 
-  const onSubmit                     = async ( data: any ) => {
+  const onSubmit                 = async ( data: any ) => {
     startSubmitting( true )
     //console.log( "Submitting worker registration with data:", data )
     console.log(data.speciality_id)
@@ -106,7 +106,7 @@ export default function FormularioArreglosScreen() {
           const url = response.secure_url
           uploadedImages.push( {
             name: img.name,
-            url             : url,
+            url          : url,
             type: RequestImageTypeEnum.Client
           } )
         }
@@ -129,11 +129,11 @@ export default function FormularioArreglosScreen() {
   }
 
 
-  const picker                       = async () => {
+  const picker                   = async () => {
     let result = await DocumentPicker.getDocumentAsync( {
-      type                : ["image/*"],
+      type           : ["image/*"],
       copyToCacheDirectory: true,
-      multiple            : true
+      multiple       : true
     } )
 
     if ( result.canceled ) {
@@ -160,7 +160,7 @@ export default function FormularioArreglosScreen() {
       }
       const payload: RequestImagePayload = {
         name: asset.name,
-        url             : asset.dataUri,
+        url          : asset.dataUri,
         type: RequestImageTypeEnum.Client
       }
       appendImage( payload )
@@ -215,17 +215,17 @@ export default function FormularioArreglosScreen() {
           />
 
 
-        {/* 
+        {/* 
           Cambiar css para que el checkbox se vea bien xd
         */}
-        <Text>"¿Hacer publico su solicitud?"</Text>
+        <Text style={styles.labelText}>"¿Hacer publico su solicitud?"</Text>
         <Controller
             control={ control }
             name="is_public"
             render={ ( { field: { onChange, onBlur, value } } ) => (
               <Checkbox
                 disabled={ submiting }
-                style={ styles.input }
+                style={ styles.checkbox } // Usamos el nuevo estilo ajustado
                 onBlur={ onBlur }
                 onCheckedChange={ onChange }
                 checked={ Boolean(value) }
@@ -261,7 +261,7 @@ export default function FormularioArreglosScreen() {
               />
             ) }
           />
-              { errors.speciality_id && <Text
+          { errors.speciality_id && <Text
               style={ { color: errorColor } }>{ errors.speciality_id.message }</Text> }
 
         <Controller
@@ -289,7 +289,7 @@ export default function FormularioArreglosScreen() {
                 <>
                   <Pressable disabled={ submiting }
                       onPress={ () => setShowDatePicker( true ) }
-                      style={ styles.input }>
+                      style={ styles.inputDate }> {/* Usamos el nuevo estilo inputDate */}
                     <Text style={ { color: value ? "#000" : "#999" } }>
                       { value
                         ? dateValue!.toLocaleDateString()
@@ -325,7 +325,7 @@ export default function FormularioArreglosScreen() {
           { errors.ends_at && <Text
               style={ { color: errorColor } }>{ errors.ends_at.message }</Text> }
 
-    <Pressable style={ styles.attachButton } onPress={ picker }>
+        <Pressable style={ styles.attachButton } onPress={ picker }>
           <Text style={ styles.attachButtonText }>Adjunta imagenes del problema</Text>
           <Text style={ styles.attachButtonIcon }>+</Text>
         </Pressable>
@@ -335,11 +335,11 @@ export default function FormularioArreglosScreen() {
         </Text> : null }
         { imagesValues.length > 0 ? imagesValues.map( ( c, i ) => (
             <View key={ c.url } style={ {
-              flexDirection    : "row",
-              alignItems       : "center",
-              paddingVertical  : 12,
-              borderBottomWidth: 1,
-              borderBottomColor: "#EEE"
+              flexDirection      : "row",
+              alignItems         : "center",
+              paddingVertical    : 12,
+              borderBottomWidth  : 1,
+              borderBottomColor  : "#EEE"
             } }>
               <Image
                 source={ { uri: c.url } }
@@ -352,7 +352,7 @@ export default function FormularioArreglosScreen() {
                 ellipsizeMode="tail"
               >{ c.name }</Text>
               <Pressable style={ styles.deleteButton }
-                         onPress={ () => removeImage( i ) }>
+                          onPress={ () => removeImage( i ) }>
                 <AntDesign name="delete" size={ 24 } color="red"/>
               </Pressable>
             </View>
@@ -363,7 +363,7 @@ export default function FormularioArreglosScreen() {
       */}
         {/* Botón Siguiente fijo abajo */ }
         <View style={ styles.footer }>
-          <Pressable  disabled={ submiting} style={ styles.nextButton } onPress={ handleSubmit( onSubmit )}>
+          <Pressable disabled={ submiting} style={ styles.nextButton } onPress={ handleSubmit( onSubmit )}>
             <Text style={ styles.nextButtonText }>Siguiente</Text>
           </Pressable>
         </View>
@@ -374,134 +374,156 @@ export default function FormularioArreglosScreen() {
 }
 
 const styles = StyleSheet.create( {
-  container        : {
-    flex           : 1,
+  container        : {
+    flex           : 1,
     backgroundColor: "#F7F8FA",
-    padding        : 16
+    padding        : 0 // Eliminado padding aquí
   },
-  dropdown         : {
-    height           : 50,
-    borderColor      : "gray",
-    borderWidth      : 0.5,
-    borderRadius     : 8,
+  dropdown         : {
+    height           : 50,
+    borderColor      : "gray",
+    borderWidth      : 0.5,
+    borderRadius     : 8,
     paddingHorizontal: 8,
-    marginBottom     : 10,
-    marginTop        : 10
+    marginBottom     : 10,
+    marginTop        : 10
   },
-  icon             : {
+  icon             : {
     marginRight: 5
   },
-  label            : {
-    position         : "absolute",
-    backgroundColor  : "white",
-    left             : 22,
-    top              : 8,
-    zIndex           : 999,
+  label            : {
+    position         : "absolute",
+    backgroundColor  : "white",
+    left             : 22,
+    top              : 8,
+    zIndex           : 999,
     paddingHorizontal: 8,
-    fontSize         : 14
+    fontSize         : 14
   },
   placeholderStyle : {
     fontSize: 16
   },
-  itemTextStyle    : {
+  itemTextStyle    : {
     textTransform: "capitalize"
   },
   selectedTextStyle: {
-    fontSize     : 16,
+    fontSize     : 16,
     textTransform: "capitalize"
 
   },
-  iconStyle        : {
+  iconStyle        : {
     width : 20,
     height: 20
   },
   inputSearchStyle : {
-    height  : 40,
+    height  : 40,
     fontSize: 16
   },
-  scrollContent    : {
-    flexGrow         : 1,
-    justifyContent   : "flex-start",
-    paddingHorizontal: 40,
-    paddingTop       : 20,
-    paddingBottom    : 40
+  scrollContent    : {
+    flexGrow         : 1,
+    justifyContent   : "flex-start",
+    paddingHorizontal: 40, // Eliminado en el diseño final
+    paddingTop       : 20,
+    paddingBottom    : 40
   },
-  headerTitle      : {
-    fontSize    : 24,
-    fontWeight  : "bold",
-    color       : "#2C3E50",
-    textAlign   : "center",
-    marginTop   : 10,
+  headerTitle      : {
+    fontSize    : 24,
+    fontWeight  : "bold",
+    color       : "#2C3E50",
+    textAlign   : "center",
+    marginTop   : 10,
     marginBottom: 15
   },
-  input            : {
-    fontSize         : 16,
-    paddingVertical  : 15,
+  input            : {
+    fontSize         : 16,
+    paddingVertical  : 15,
     borderBottomWidth: 1,
     borderBottomColor: "#DDD",
-    marginBottom     : 20
+    marginBottom     : 20
   },
-  button           : {
+  inputDate        : { // Nuevo estilo para el datepicker
+    fontSize         : 16,
+    paddingVertical  : 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#DDD",
+    marginBottom     : 20,
+    justifyContent   : "center",
+    height           : 50
+  },
+  button           : {
     backgroundColor: "#3498DB",
     paddingVertical: 18,
-    borderRadius   : 30,
-    alignItems     : "center",
-    marginTop      : 30
+    borderRadius   : 30,
+    alignItems     : "center",
+    marginTop      : 30
   },
-  buttonText       : { color: "white", fontSize: 16, fontWeight: "bold" },
-  footer        : {
-    position         : "absolute",
-    bottom           : 0,
-    left             : 0,
-    right            : 0,
-    backgroundColor  : "white",
-    paddingVertical  : 15,
-    paddingHorizontal: 20,
-    paddingBottom    : Platform.OS === "ios" ? 30 : 20,
-    borderTopWidth   : 1,
-    borderTopColor   : "#F0F0F0"
+  buttonText       : { color: "white", fontSize: 16, fontWeight: "bold" },
+  footer        : {
+    position         : "absolute",
+    bottom           : 0,
+    left             : 0,
+    right            : 0,
+    backgroundColor  : "white",
+    paddingVertical  : 15,
+    paddingHorizontal: 20, // Añadir padding horizontal aquí
+    paddingBottom    : Platform.OS === "ios" ? 30 : 20,
+    borderTopWidth   : 1,
+    borderTopColor   : "#F0F0F0"
   },
-  nextButton    : {
+  nextButton    : {
     backgroundColor: "#3498DB",
     paddingVertical: 16,
-    borderRadius   : 30,
-    alignItems     : "center"
+    borderRadius   : 30,
+    alignItems     : "center"
   },
   nextButtonText: {
-    color     : "white",
-    fontSize  : 16,
+    color     : "white",
+    fontSize  : 16,
     fontWeight: "bold"
   },
   map: {
     flex: 1
   },
-  attachButton     : {
-    marginTop        : 10,
-    flexDirection    : "row",
-    justifyContent   : "space-between",
-    alignItems       : "center",
-    paddingVertical  : 15,
+  attachButton     : {
+    marginTop        : 10,
+    flexDirection    : "row",
+    justifyContent   : "space-between",
+    alignItems       : "center",
+    paddingVertical  : 15,
     paddingHorizontal: 20,
-    backgroundColor  : "white",
-    borderRadius     : 10,
-    shadowColor      : "#000",
-    shadowOffset     : { width: 0, height: 2 },
-    shadowOpacity    : 0.1,
-    shadowRadius     : 5,
-    elevation        : 3,
-    marginBottom     : 40
+    backgroundColor  : "white",
+    borderRadius     : 10,
+    shadowColor      : "#000",
+    shadowOffset     : { width: 0, height: 2 },
+    shadowOpacity    : 0.1,
+    shadowRadius     : 5,
+    elevation        : 3,
+    marginBottom     : 40
   },
   attachButtonText : { fontSize: 16, color: "#34495E", fontWeight: "500" },
   attachButtonIcon : { fontSize: 24, color: "#3498DB", fontWeight: "bold" },
-  deleteButton     : {
-    padding       : 8,
-    width         : 44,
-    alignItems    : "center",
+  deleteButton     : {
+    padding       : 8,
+    width         : 44,
+    alignItems    : "center",
     justifyContent: "center"
   },
-  optionText       : {
-    fontSize     : 16, color: "#34495E",
+  optionText       : {
+    fontSize     : 16, color: "#34495E",
     textTransform: "capitalize",
-    flexShrink   : 1
+    flexShrink   : 1
+  },
+  labelText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 5, // Espacio antes del checkbox
+  },
+  checkbox: {
+    width: 24, 
+    height: 24, 
+    borderRadius: 4, 
+    borderWidth: 2, 
+    borderColor: "#ccc",
   },
 } )
