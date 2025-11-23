@@ -1,4 +1,12 @@
-import React, { useState } from "react"
+import { useAuth } from "@/hooks/auth_context"
+import {
+  Ionicons
+} from "@expo/vector-icons"
+import {
+  Stack,
+  useRouter
+} from "expo-router"
+import React, { useEffect, useState } from "react"
 import {
   Pressable,
   ScrollView,
@@ -6,17 +14,10 @@ import {
   Text,
   TextInput,
   View
-}                          from "react-native"
+} from "react-native"
 import {
   SafeAreaView
-}                          from "react-native-safe-area-context"
-import {
-  Ionicons
-}                          from "@expo/vector-icons"
-import {
-  Stack,
-  useRouter
-}                          from "expo-router"
+} from "react-native-safe-area-context"
 
 // --- Datos de ejemplo (Separados por pestaña) ---
 const MOCK_DATA = {
@@ -48,31 +49,79 @@ const MOCK_DATA = {
 export default function SolicitudesScreen() {
   const router                    = useRouter()
   const [activeTab, setActiveTab] = useState( "En curso" )
-  const tabs                      = ["Pendientes", "En curso", "Historial"]
+  const tabs                      = ["Pendiente", "En curso", "Historial"]
+  const {getRequestsCliente }         = useAuth()
+  const [loading, setLoading] = useState(false)
+  const [requests, setRequests] = useState<any[]>([])
+
+    useEffect(() => {
+    const loadRequests = async () => {
+      setLoading(true)
+      try {
+        const data = await getRequestsCliente(activeTab.toLowerCase())
+        setRequests(data)
+        console.log(data[1].images)
+        console.log(data[2].images)
+      } catch (error) {
+        console.error('Error loading requests:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadRequests()
+  }, [activeTab]) // Se ejecuta cuando activeTab cambia
+
+  const movingResume = (request: any) => {
+    console.log("request a resumir")
+    console.log(request)
+    const images = request.images
+    console.log("images resumen")
+    console.log(images)
+    console.log("Image map")
+    console.log(images.map((img: { url: any }) => img.url).join(','))
+    console.log(images.length.toString())
+    router.push( {
+      pathname: "/resumen-solicitud-final",
+      params  : {
+        title: request.title,
+        description: request.description,
+        value: request.value.toString(),
+        estimated_time: request.estimated_time.toString(),
+        status: request.status,
+        location_text: request.location_text,
+        ends_at: request.ends_at,
+        complexity: request.complexity,
+        // Para imágenes, pasar solo URLs o IDs
+        imageUrls: images.map((img: { url: any }) => img.url).join(','), // Convertir array a string
+        imageCount: images.length.toString()
+      }
+    } )
+  }
 
   // --- 1. FUNCIÓN PARA RENDERIZAR EL CONTENIDO DE LA PESTAÑA ACTIVA ---
   const renderTabContent = () => {
     // @ts-ignore
-    const requests = MOCK_DATA[activeTab] || []
-
-    if ( requests.length === 0 ) {
-      return <Text style={ styles.emptyText }>No hay solicitudes en esta
-        sección.</Text>
+    if (loading) {
+      return <Text>Cargando solicitudes...</Text>
     }
 
-    // --- LÓGICA PARA "EN CURSO" (Botón "Resumen") ---
-    if ( activeTab === "En curso" ) {
+    if (requests.length === 0) {
+      return <Text style={styles.emptyText}>No hay solicitudes en esta categoría</Text>
+    }
+
+    // // --- LÓGICA PARA "EN CURSO" (Botón "Resumen") ---
+    if ( activeTab === "En curso" || activeTab === "Historial" ) {
       return requests.map( request => (
         <View key={ request.id } style={ styles.requestCard }>
-          <Pressable onPress={ () => router.push(
-            `/resumen-solicitud/${ request.id }` ) }>
+          <Pressable onPress={ () => movingResume(request) }>
             <View style={ styles.cardHeader }>
               <Text style={ styles.cardDate }>{ request.date }</Text>
               <Text style={ styles.cardJobNumber }>{ request.jobNumber }</Text>
             </View>
             <Text style={ styles.cardTitle }>{ request.title }</Text>
             <Text style={ styles.cardLocation }>
-              <Ionicons name="location-pin" size={ 14 } color="#7F8C8D"/>
+              <Ionicons name="location" size={ 14 } color="#7F8C8D"/>
               { " " }{ request.location }, <Text
               style={ { color: "#3498DB" } }>{ request.distance }</Text>
             </Text>
@@ -82,8 +131,7 @@ export default function SolicitudesScreen() {
           <View style={ styles.cardButtons }>
             <Pressable
               style={ [styles.button, styles.buttonOutline] }
-              onPress={ () => router.push(
-                `/resumen-solicitud/${ request.id }` ) }
+              onPress={ () => movingResume(request) } 
             >
               <Text style={ [styles.buttonText, styles.buttonTextOutline] }>Resumen
                 solicitud</Text>
@@ -96,19 +144,18 @@ export default function SolicitudesScreen() {
       ) )
     }
 
-    // --- LÓGICA PARA "PENDIENTES" (Botón "Editar") ---
+    // // --- LÓGICA PARA "PENDIENTES" (Botón "Editar") ---
     if ( activeTab === "Pendientes" ) {
       return requests.map( request => (
         <View key={ request.id } style={ styles.requestCard }>
-          <Pressable onPress={ () => router.push(
-            `/resumen-solicitud/${ request.id }` ) }>
+          <Pressable onPress={ () => movingResume(request) }>
             <View style={ styles.cardHeader }>
               <Text style={ styles.cardDate }>{ request.date }</Text>
               <Text style={ styles.cardJobNumber }>{ request.jobNumber }</Text>
             </View>
             <Text style={ styles.cardTitle }>{ request.title }</Text>
             <Text style={ styles.cardLocation }>
-              <Ionicons name="location-pin" size={ 14 } color="#7F8C8D"/>
+              <Ionicons name="location" size={ 14 } color="#7F8C8D"/>
               { " " }{ request.location }, <Text
               style={ { color: "#3498DB" } }>{ request.distance }</Text>
             </Text>
@@ -144,7 +191,7 @@ export default function SolicitudesScreen() {
       <Pressable
         key={ request.id }
         style={ styles.requestCard }
-        onPress={ () => router.push( `/resumen-solicitud/${ request.id }` ) }
+        onPress={ () => movingResume(request) }
       >
         <View style={ styles.cardHeader }>
           <Text style={ styles.cardDate }>{ request.date }</Text>
@@ -152,7 +199,7 @@ export default function SolicitudesScreen() {
         </View>
         <Text style={ styles.cardTitle }>{ request.title }</Text>
         <Text style={ styles.cardLocation }>
-          <Ionicons name="location-pin" size={ 14 } color="#7F8C8D"/>
+          <Ionicons name="location" size={ 14 } color="#7F8C8D"/>
           { " " }{ request.location }, <Text
           style={ { color: "#3498DB" } }>{ request.distance }</Text>
         </Text>

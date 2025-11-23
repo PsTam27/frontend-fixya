@@ -49,7 +49,9 @@ interface AuthContextType {
 
   hasAccess( type: UserTypeEnum ): Promise<boolean>
 
-  createRequest( payload: RegisterRequestPayload ): Promise<boolean>
+  createRequest( payload: RegisterRequestPayload ): Promise<any>
+
+  getRequestsCliente(status: string): Promise<any>
 }
 
 
@@ -188,13 +190,24 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
       notes: pre_payload.notes || []
     }
       const response = await api.post( "/sale/request", payload )
-      return true
+
+      return await response.data.data
     }
     catch ( e ) {
       console.error( "Error en update:", e )
       return false
     }
   }
+
+  const getRequestsCliente = async ( status: string ) => {
+    console.log("status")
+    console.log(status)
+    const response = await api.get( "/sale/request-cliente", {
+      params: {"status": status, "preload": "Speciality, Images"}
+    })
+    return await response.data.data
+  }
+
 
   const updateWorker = async ( payload: UpdateWorkerDetailPayload ) => {
     try {
@@ -262,7 +275,8 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
         update,
         register,
         hasAccess,
-        createRequest
+        createRequest,
+        getRequestsCliente
       }
     }>
       { children }

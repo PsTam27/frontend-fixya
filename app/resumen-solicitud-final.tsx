@@ -1,36 +1,39 @@
-import React                                             from "react"
+import { Image } from "expo-image"
+import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import React from "react"
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native"
-import { Stack, useLocalSearchParams, useRouter }        from "expo-router"
 import {
   SafeAreaView
-}                                                        from "react-native-safe-area-context"
-
+} from "react-native-safe-area-context"
 export default function ResumenSolicitudFinalScreen() {
   const router = useRouter()
   // Leemos los parámetros que vienen del formulario
   const {
-          titulo,
-          tipoTrabajador,
-          descripcion,
-          fechaEntrega,
-          comuna,
-          direccion
+          title,
+          description,
+          value,
+          estimated_time,
+          status,
+          location_text,
+          ends_at,
+          complexity,
+          imageUrls,
+          imageCount
         }      = useLocalSearchParams()
 
   const handleFinalizar = () => {
     console.log( "Finalizando solicitud:", {
-      titulo,
-      tipoTrabajador,
-      descripcion,
-      fechaEntrega,
-      comuna,
-      direccion
+      title,
+        description,
+        value,
+        estimated_time,
+        status,
+        location_text,
+        ends_at,
+        complexity,
+        imageUrls,
+        imageCount
     } )
-    // Aquí iría la lógica para enviar la solicitud final al backend
-    // Después, probablemente quieras navegar a la pantalla de "Solicitudes" del usuario
-    alert( "Solicitud enviada con éxito (simulación)" ) // Placeholder
-    // Ejemplo de navegación (ajusta la ruta si es necesario):
-    // router.replace('/(tabs)/solicitudes');
     router.replace( "/(tabs)/" ) // O volver al inicio de usuario
   }
 
@@ -48,33 +51,60 @@ export default function ResumenSolicitudFinalScreen() {
 
       <ScrollView contentContainerStyle={ styles.scrollContent }>
         {/* Mostramos los datos recibidos */ }
-        <Text style={ styles.title }>{ titulo ||
+        <Text style={ styles.title }>{ title ||
           "Título no especificado" }</Text>
         <Text style={ styles.info }>
-          <Text style={ styles.infoLabel }>Necesito: </Text>
-          { tipoTrabajador || "Tipo no especificado" }
+          <Text style={ styles.infoLabel }>Descripción: </Text>
+          { description || "Descripción no especificada" }
         </Text>
         <Text style={ styles.info }>
           <Text style={ styles.infoLabel }>Fecha entrega: </Text>
-          { fechaEntrega || "Fecha no especificada" }
+          { ends_at || "Fecha no especificada" }
         </Text>
         <Text style={ styles.info }>
           <Text style={ styles.infoLabel }>Dirección: </Text>
-          { direccion
-            ? `${ direccion }, ${ comuna }`
-            : "Dirección no especificada" }
+          { location_text || "Dirección no especificada" }
+        </Text>
+        <Text style={ styles.info }>
+          <Text style={ styles.infoLabel }>Estado: </Text>
+          { status || "Pendiente" }
         </Text>
 
+        <Text style={ styles.info }>
+          <Text style={ styles.infoLabel }>Complejidad Estimada: </Text>
+          { complexity || "No calculado" }
+        </Text>
+        <Text style={ styles.info }>
+          <Text style={ styles.infoLabel }>Duración Estimada: </Text>
+          { estimated_time || "No calculado" }
+        </Text>
+
+        <Text style={ styles.info }>
+          <Text style={ styles.infoLabel }>Imagenes subidas: </Text>
+            { imageCount || "Sin imagenes" }
+        </Text>
+          {typeof imageUrls === 'string' ? (
+          <View style={styles.carouselContainer}>
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.carouselContent}
+            >
+              {imageUrls.split(',').map((url, index) => (
+                <View key={`${url}-${index}`} style={styles.imageContainer}>
+                  <Image
+                    source={{ uri: url }}
+                    style={styles.carouselImage}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        ) : null}
         {/* Placeholder del Mapa */ }
         <View style={ styles.mapPlaceholder }>
           <Text style={ styles.mapText }>[Aquí va el componente de Mapa]</Text>
         </View>
-
-        <Text style={ styles.infoLabel }>Descripción:</Text>
-        <Text style={ styles.info }>
-          { descripcion || "Sin descripción." }
-          {/* Podrías añadir "Ver más" si la descripción es larga */ }
-        </Text>
 
       </ScrollView>
 
@@ -144,5 +174,31 @@ const styles = StyleSheet.create( {
     color     : "white",
     fontSize  : 16,
     fontWeight: "bold"
-  }
+  },
+  carouselContainer: {
+    marginVertical: 10,
+    height: 200, // Altura fija para el carrusel
+  },
+  carouselContent: {
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  imageContainer: {
+    marginHorizontal: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    backgroundColor: 'white',
+    borderRadius: 10,
+  },
+  carouselImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 10,
+  },
 } )

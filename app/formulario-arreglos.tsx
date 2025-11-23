@@ -5,7 +5,7 @@ import { errorColor } from "@/constants/theme"
 import { useAuth } from "@/hooks/auth_context"
 import { cloudinary } from "@/lib/api"
 import { specialitiesOption } from "@/lib/tanstack_query"
-import { registerRequestSchema, RequestImagePayload } from "@/models/sales/payload"
+import { RegisterRequestPayload, registerRequestSchema, RequestImagePayload } from "@/models/sales/payload"
 import { RequestImageTypeEnum } from "@/models/sales/response"
 import { Speciality } from "@/models/worker/response"
 import AntDesign from "@expo/vector-icons/AntDesign"
@@ -86,8 +86,9 @@ export default function FormularioArreglosScreen() {
     //console.log( "Submitting worker registration with data:", data )
     console.log(data.speciality_id)
     data.speciality_id = Number(data.speciality_id)
-    if ( imagesValues.length === 0 || imagesValues.length >= 3) {
+    if ( imagesValues.length === 0 || imagesValues.length > 3) {
       console.log("Hay muchas imagenes xd")
+      startSubmitting( false )
       return
     }
     
@@ -112,19 +113,33 @@ export default function FormularioArreglosScreen() {
         }
       } )
     }
-    const n = {
+    const n: RegisterRequestPayload = {
       ...data,
       images: uploadedImages
     }
 
-    await createRequest(n)
+    const result = await createRequest(n)
+    console.log("result de mandar la solicitud")
+    console.log(result)
 
     startSubmitting( false )
 
 
     router.push( {
       pathname: "/resumen-solicitud-final",
-      params  : n
+      params  : {
+        title: result.title,
+        description: result.description,
+        value: result.value.toString(),
+        estimated_time: result.estimated_time.toString(),
+        status: result.status,
+        location_text: result.location_text,
+        ends_at: result.ends_at,
+        complexity: result.complexity,
+        // Para imágenes, pasar solo URLs o IDs
+        imageUrls: uploadedImages.map(img => img.url).join(','), // Convertir array a string
+        imageCount: uploadedImages.length.toString()
+      }
     } )
   }
 
