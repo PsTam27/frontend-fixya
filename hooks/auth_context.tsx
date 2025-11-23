@@ -52,6 +52,8 @@ interface AuthContextType {
   createRequest( payload: RegisterRequestPayload ): Promise<any>
 
   getRequestsCliente(status: string): Promise<any>
+
+  getSolicitudesTrabajador(status: string): Promise<any>
 }
 
 
@@ -208,6 +210,14 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
     return await response.data.data
   }
 
+  //getSolicitudesTrabajador
+
+  const getSolicitudesTrabajador = async (status: string) => {
+    const response = await api.get( "/sale/request-trabajador", {
+      params: {"status": status, "preload": "Speciality, Images"}
+    })
+    return await response.data.data
+  }
 
   const updateWorker = async ( payload: UpdateWorkerDetailPayload ) => {
     try {
@@ -225,14 +235,19 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
 
 
   const registerWorker = async ( payload: RegisterWorkerPayload ) => {
+    let response
     try {
-      const response = await api.post( "/worker", payload )
+      const fullUrl = `${api.defaults.baseURL}/worker`
+      console.log('URL completa:', fullUrl)
+      response = await api.post( "/worker", payload )
+      
       const worker   = workerFromJson(response.data.data)
       await SecureStore.setItemAsync( WORKER_KEY, JSON.stringify( worker ) )
       setWorker( worker )
       return true
     }
     catch ( e ) {
+      console.log(response?.status)
       console.error( "Error en register:", e )
       return false
     }
@@ -276,7 +291,8 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
         register,
         hasAccess,
         createRequest,
-        getRequestsCliente
+        getRequestsCliente,
+        getSolicitudesTrabajador
       }
     }>
       { children }

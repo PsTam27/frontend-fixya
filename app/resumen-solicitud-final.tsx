@@ -111,7 +111,7 @@ export default function ResumenSolicitudFinalScreen() {
       {/* Botón Finalizar fijo abajo */ }
       <View style={ styles.footer }>
         <Pressable style={ styles.finalizeButton } onPress={ handleFinalizar }>
-          <Text style={ styles.finalizeButtonText }>Finalizar</Text>
+          <Text style={ styles.finalizeButtonText }>Volver</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -177,7 +177,7 @@ const styles = StyleSheet.create( {
   },
   carouselContainer: {
     marginVertical: 10,
-    height: 200, // Altura fija para el carrusel
+    height: 300, // Altura fija para el carrusel
   },
   carouselContent: {
     alignItems: 'center',
@@ -197,8 +197,8 @@ const styles = StyleSheet.create( {
     borderRadius: 10,
   },
   carouselImage: {
-    width: 150,
-    height: 150,
+    width: 250,
+    height: 250,
     borderRadius: 10,
   },
 } )

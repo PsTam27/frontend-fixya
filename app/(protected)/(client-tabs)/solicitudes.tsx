@@ -60,8 +60,6 @@ export default function SolicitudesScreen() {
       try {
         const data = await getRequestsCliente(activeTab.toLowerCase())
         setRequests(data)
-        console.log(data[1].images)
-        console.log(data[2].images)
       } catch (error) {
         console.error('Error loading requests:', error)
       } finally {

@@ -30,7 +30,7 @@ import {
 } from "react-native"
 import { Dropdown } from "react-native-element-dropdown"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context"
 //Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_API_TOKEN);
 
 
@@ -87,7 +87,6 @@ export default function FormularioArreglosScreen() {
     console.log(data.speciality_id)
     data.speciality_id = Number(data.speciality_id)
     if ( imagesValues.length === 0 || imagesValues.length > 3) {
-      console.log("Hay muchas imagenes xd")
       startSubmitting( false )
       return
     }
@@ -102,6 +101,7 @@ export default function FormularioArreglosScreen() {
           unsigned     : true
         }, callback: ( error: any, response: any ) => {
           if ( error ) {
+            startSubmitting( false )
             return
           }
           const url = response.secure_url
@@ -119,9 +119,6 @@ export default function FormularioArreglosScreen() {
     }
 
     const result = await createRequest(n)
-    console.log("result de mandar la solicitud")
-    console.log(result)
-
     startSubmitting( false )
 
 
@@ -199,6 +196,8 @@ export default function FormularioArreglosScreen() {
           keyboardShouldPersistTaps="handled"
           enableAutomaticScroll={ true }
         >
+
+        <Text style={styles.labelText}>¿Cual es su problema?</Text>
         <Controller
             control={ control }
             name="title"
@@ -213,7 +212,10 @@ export default function FormularioArreglosScreen() {
               />
             ) }
           />
+          { errors.title && <Text
+              style={ { color: errorColor } }>{ errors.title.message }</Text> }
 
+        <Text style={styles.labelText}>Describa su problema</Text>
         <Controller
             control={ control }
             name="description"
@@ -228,12 +230,14 @@ export default function FormularioArreglosScreen() {
               />
             ) }
           />
+        { errors.description && <Text
+              style={ { color: errorColor } }>{ errors.description.message }</Text> }
 
 
         {/* 
           Cambiar css para que el checkbox se vea bien xd
         */}
-        <Text style={styles.labelText}>"¿Hacer publico su solicitud?"</Text>
+        <Text style={styles.labelText}>¿Hacer publico su solicitud?</Text>
         <Controller
             control={ control }
             name="is_public"
@@ -243,11 +247,14 @@ export default function FormularioArreglosScreen() {
                 style={ styles.checkbox } // Usamos el nuevo estilo ajustado
                 onBlur={ onBlur }
                 onCheckedChange={ onChange }
-                checked={ Boolean(value) }
+                checked={ value }
               />
             ) }
           />
+        { errors.is_public && <Text
+              style={ { color: errorColor } }>{ errors.is_public.message }</Text> }
 
+        <Text style={styles.labelText}>Seleccione una especialidad asociada al problema</Text>
         <Controller
             control={ control }
             name="speciality_id"
@@ -279,6 +286,7 @@ export default function FormularioArreglosScreen() {
           { errors.speciality_id && <Text
               style={ { color: errorColor } }>{ errors.speciality_id.message }</Text> }
 
+        <Text style={styles.labelText}>Ubicación</Text>
         <Controller
             control={ control }
             name="location_text"
@@ -293,8 +301,10 @@ export default function FormularioArreglosScreen() {
               />
             ) }
           />
+        { errors.location_text && <Text
+              style={ { color: errorColor } }>{ errors.location_text.message }</Text> }
 
-
+        <Text style={styles.labelText}>¿Cual es su fecha limite para solucionar el problema?</Text>
         <Controller
             control={ control }
             name="ends_at"
@@ -341,7 +351,7 @@ export default function FormularioArreglosScreen() {
               style={ { color: errorColor } }>{ errors.ends_at.message }</Text> }
 
         <Pressable style={ styles.attachButton } onPress={ picker }>
-          <Text style={ styles.attachButtonText }>Adjunta imagenes del problema</Text>
+          <Text style={ styles.attachButtonText }>Adjunte imagenes del problema</Text>
           <Text style={ styles.attachButtonIcon }>+</Text>
         </Pressable>
         { imagesValues.length === 0 ? <Text
