@@ -137,6 +137,8 @@ export default function WorkerRegisterStep1() {
             control={ control }
             name="full_name"
             render={ ( { field: { onChange, onBlur, value } } ) => (
+              <>
+                <Text style={styles.inputLabel}>Nombre completo</Text>
               <TextInput
                 style={ styles.input } placeholder="Nombre completo"
                 onBlur={ onBlur }
@@ -144,6 +146,7 @@ export default function WorkerRegisterStep1() {
                 value={ value }
                 placeholderTextColor="#999"
               />
+              </>
             ) }
           />
           { errors.full_name && <Text
@@ -152,6 +155,8 @@ export default function WorkerRegisterStep1() {
             control={ control }
             name="email"
             render={ ( { field: { onChange, onBlur, value } } ) => (
+              <>
+              <Text style={styles.inputLabel}>Correo electrónico</Text>
               <TextInput
                 style={ styles.input } placeholder="Correo electronico"
                 onBlur={ onBlur }
@@ -160,6 +165,7 @@ export default function WorkerRegisterStep1() {
                 keyboardType="email-address" autoCapitalize="none"
                 placeholderTextColor="#999"
               />
+              </>
             ) }
           />
           { errors.email && <Text
@@ -168,11 +174,15 @@ export default function WorkerRegisterStep1() {
             control={ control }
             name="bank_identity"
             render={ ( { field: { onChange, onBlur, value } } ) => (
-              <TextInput style={ styles.input } placeholder="Rut"
-                         onBlur={ onBlur }
-                         onChangeText={ onChange }
-                         value={ value }
-                         placeholderTextColor="#999"/>
+              <>
+                <Text style={styles.inputLabel}>Rut</Text>
+                <TextInput style={ styles.input } placeholder=""
+                  editable={ !submiting }
+                  onBlur={ onBlur }
+                  onChangeText={ onChange }
+                  value={ value }
+                  placeholderTextColor="#999"/>
+              </>
             ) }
           />
           { errors.bank_identity && <Text
@@ -181,12 +191,16 @@ export default function WorkerRegisterStep1() {
             control={ control }
             name="phone"
             render={ ( { field: { onChange, onBlur, value } } ) => (
-              <TextInput style={ styles.input } placeholder="Celular"
-                         onBlur={ onBlur }
-                         onChangeText={ onChange }
-                         value={ value }
-                         keyboardType="phone-pad"
-                         placeholderTextColor="#999"/>
+              <>
+                <Text style={styles.inputLabel}>Celular</Text>
+                <TextInput style={ styles.input } placeholder=""
+                  editable={ !submiting }
+                  onBlur={ onBlur }
+                  onChangeText={ onChange }
+                  value={ value }
+                  keyboardType="phone-pad"
+                  placeholderTextColor="#999"/>
+              </>
             ) }
           />
           { errors.phone && <Text
@@ -198,12 +212,14 @@ export default function WorkerRegisterStep1() {
               const dateValue = value ? new Date( value ) : undefined
               return (
                 <>
-                  <Pressable onPress={ () => setShowDatePicker( true ) }
-                             style={ styles.input }>
+                  <Text style={styles.inputLabel}>Fecha de nacimiento</Text>
+                  <Pressable disabled={ submiting }
+                    onPress={ () => setShowDatePicker( true ) }
+                    style={ styles.inputDate }>
                     <Text style={ { color: value ? "#000" : "#999" } }>
                       { value
                         ? dateValue!.toLocaleDateString()
-                        : "Fecha de nacimiento" }
+                        : "Selecciona fecha" }
                     </Text>
                   </Pressable>
 
@@ -238,27 +254,31 @@ export default function WorkerRegisterStep1() {
             control={ control }
             name="region"
             render={ ( { field: { onChange, onBlur, value } } ) => (
-              <Dropdown
-                style={ [styles.dropdown] }
-                placeholderStyle={ styles.placeholderStyle }
-                selectedTextStyle={ styles.selectedTextStyle }
-                inputSearchStyle={ styles.inputSearchStyle }
-                iconStyle={ styles.iconStyle }
-                itemTextStyle={ styles.itemTextStyle }
-                data={ parsedRegions }
-                search
-                maxHeight={ 300 }
-                labelField="label"
-                valueField="value"
-                placeholder="Selecciona una region"
-                searchPlaceholder="Buscar..."
-                value={ value }
-                onBlur={ onBlur }
-                onChange={ item => {
-                  // const selected = data?.find( region => region.id === item.value )
-                  onChange( item.value )
-                } }
-              />
+              <>
+                <Text style={styles.inputLabel}>Región</Text>
+                <Dropdown
+                  disable={ submiting }
+                  style={ [styles.dropdown] }
+                  placeholderStyle={ styles.placeholderStyle }
+                  selectedTextStyle={ styles.selectedTextStyle }
+                  inputSearchStyle={ styles.inputSearchStyle }
+                  iconStyle={ styles.iconStyle }
+                  itemTextStyle={ styles.itemTextStyle }
+                  data={ parsedRegions }
+                  search
+                  maxHeight={ 300 }
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Selecciona una region"
+                  searchPlaceholder="Buscar..."
+                  value={ value }
+                  onBlur={ onBlur }
+                  onChange={ item => {
+                    // const selected = data?.find( region => region.id === item.value )
+                    onChange( item.value )
+                  } }
+                />
+              </>
             ) }
           />
           { errors.region && <Text
@@ -267,30 +287,33 @@ export default function WorkerRegisterStep1() {
             control={ control }
             name="comuna"
             render={ ( { field: { onChange, onBlur, value } } ) => (
-              <Dropdown
-                style={ [styles.dropdown] }
-                disable={ !regionSelected }
-                placeholderStyle={ styles.placeholderStyle }
-                selectedTextStyle={ styles.selectedTextStyle }
-                inputSearchStyle={ styles.inputSearchStyle }
-                iconStyle={ styles.iconStyle }
-                itemTextStyle={ styles.itemTextStyle }
-                data={ parsedComunas }
-                search
-                maxHeight={ 300 }
-                labelField="label"
-                valueField="value"
-                placeholder={ regionSelected
-                  ? "Selecciona una comuna"
-                  : "Selecciona una región primero" }
-                searchPlaceholder="Buscar..."
-                value={ value }
-                onBlur={ onBlur }
-                onChange={ item => {
-                  // const selected = comunaData?.find( comuna => comuna.id === item.value )
-                  onChange( item.value )
-                } }
-              />
+              <>
+                <Text style={styles.inputLabel}>Comuna</Text>
+                <Dropdown
+                  style={ [styles.dropdown] }
+                  disable={ !regionSelected || submiting }
+                  placeholderStyle={ styles.placeholderStyle }
+                  selectedTextStyle={ styles.selectedTextStyle }
+                  inputSearchStyle={ styles.inputSearchStyle }
+                  iconStyle={ styles.iconStyle }
+                  itemTextStyle={ styles.itemTextStyle }
+                  data={ parsedComunas }
+                  search
+                  maxHeight={ 300 }
+                  labelField="label"
+                  valueField="value"
+                  placeholder={ regionSelected
+                    ? "Selecciona una comuna"
+                    : "Selecciona una región primero" }
+                  searchPlaceholder="Buscar..."
+                  value={ value }
+                  onBlur={ onBlur }
+                  onChange={ item => {
+                    // const selected = comunaData?.find( comuna => comuna.id === item.value )
+                    onChange( item.value )
+                  } }
+                />
+              </>
             ) }
           />
           { errors.comuna && <Text
@@ -299,11 +322,15 @@ export default function WorkerRegisterStep1() {
             control={ control }
             name="calle"
             render={ ( { field: { onChange, onBlur, value } } ) => (
-              <TextInput style={ styles.input } placeholder="Calle"
-                         onBlur={ onBlur }
-                         onChangeText={ onChange }
-                         value={ value }
-                         placeholderTextColor="#999"/>
+              <>
+                <Text style={styles.inputLabel}>Dirección</Text>
+                <TextInput style={ styles.input } placeholder=""
+                  editable={ !submiting }
+                  onBlur={ onBlur }
+                  onChangeText={ onChange }
+                  value={ value }
+                  placeholderTextColor="#999"/>
+              </>
             ) }
           />
           { errors.calle && <Text
@@ -313,34 +340,42 @@ export default function WorkerRegisterStep1() {
             name="password"
             render={ ( { field: { onChange, onBlur, value } } ) => (
               <View style={ {
-                flexDirection: "row",
-                alignItems   : "center",
                 marginBottom : 20
               } }>
-                <TextInput
-                  style={ [styles.input, { flex: 1, marginBottom: 0 }] }
-                  placeholder="Contraseña"
-                  secureTextEntry={ !showPassword }
-                  onBlur={ onBlur }
-                  onChangeText={ onChange }
-                  value={ value }
-                  textContentType="password"
-                  autoComplete="password"
-                  returnKeyType="done"
-                  placeholderTextColor="#999"
-                />
-                <Pressable
-                  onPress={ () => setShowPassword( prev => !prev ) }
-                  hitSlop={ 8 }
-                  style={ { paddingHorizontal: 10 } }
-                >
-                  {
-                    showPassword ?
-                      <AntDesign name="eye" size={ 24 } color="black"/> :
-                      <AntDesign name="eye-invisible" size={ 24 }
+                <Text style={styles.inputLabel}>Contraseña</Text>
+                <View style={ {
+                  flexDirection: "row", 
+                  alignItems: "center",
+                  width: "100%",
+                  borderBottomWidth: 1, 
+                  borderBottomColor: "#DDD",
+                } }>
+                  <TextInput
+                    style={ [styles.input, { flex: 1, marginBottom: 0, paddingHorizontal: 0 }] } 
+                    editable={ !submiting }
+                    placeholder="Contraseña"
+                    secureTextEntry={ !showPassword }
+                    onBlur={ onBlur }
+                    onChangeText={ onChange }
+                    value={ value }
+                    textContentType="password"
+                    autoComplete="password"
+                    returnKeyType="done"
+                    placeholderTextColor="#999"
+                  />
+                  <Pressable
+                    onPress={ () => setShowPassword( prev => !prev ) }
+                    hitSlop={ 8 }
+                    style={ { paddingHorizontal: 10 } }
+                  >
+                    {
+                      showPassword ?
+                        <AntDesign name="eye" size={ 24 } color="black"/> :
+                        <AntDesign name="eye-invisible" size={ 24 }
                                  color="black"/>
-                  }
-                </Pressable>
+                    }
+                  </Pressable>
+                </View>
               </View>
             ) }
           />
@@ -351,26 +386,33 @@ export default function WorkerRegisterStep1() {
             name="confirm"
             render={ ( { field: { onChange, onBlur, value } } ) => (
               <View style={ {
-                flexDirection: "row",
-                alignItems   : "center",
                 marginBottom : 20
               } }>
+                <Text style={styles.inputLabel}>Repetir Contraseña</Text>
+                <View style={ {
+                  flexDirection: "row", 
+                  alignItems: "center",
+                  width: "100%",
+                  borderBottomWidth: 1, 
+                  borderBottomColor: "#DDD",
+                } }></View>
                 <TextInput
-                  style={ [styles.input, { flex: 1, marginBottom: 0 }] }
-                  placeholder="Confirmar Contraseña"
-                  secureTextEntry={ !showPassword }
-                  onBlur={ onBlur }
-                  onChangeText={ onChange }
-                  value={ value }
-                  textContentType="password"
-                  autoComplete="password"
-                  returnKeyType="done"
-                  placeholderTextColor="#999"
-                />
+                    style={ [styles.input, { flex: 1, marginBottom: 0, paddingHorizontal: 0 }] } 
+                    editable={ !submiting }
+                    placeholder="Contraseña"
+                    secureTextEntry={ !showPassword }
+                    onBlur={ onBlur }
+                    onChangeText={ onChange }
+                    value={ value }
+                    textContentType="password"
+                    autoComplete="password"
+                    returnKeyType="done"
+                    placeholderTextColor="#999"
+                  />
                 <Pressable
                   onPress={ () => setShowPassword( prev => !prev ) }
                   hitSlop={ 8 }
-                  style={ { paddingHorizontal: 10 } }
+                  style={ { paddingHorizontal: 10, paddingVertical: 10 } }
                 >
                   {
                     showPassword ?
@@ -455,19 +497,35 @@ const styles = StyleSheet.create( {
     paddingBottom    : 40
   },
   headerTitle      : {
-    fontSize    : 24,
-    fontWeight  : "bold",
-    color       : "#2C3E50",
-    textAlign   : "center",
-    marginTop   : 10,
+    fontSize  : 24,
+    fontWeight: "bold",
+    color     : "#2C3E50",
+    textAlign : "center",
+    marginTop : 10,
     marginBottom: 15
+  },
+  inputLabel       : { 
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 5,
+    fontWeight: "500",
   },
   input            : {
     fontSize         : 16,
     paddingVertical  : 15,
     borderBottomWidth: 1,
     borderBottomColor: "#DDD",
-    marginBottom     : 20
+    marginBottom     : 20,
+    paddingHorizontal: 0, 
+  },
+  inputDate        : { 
+    fontSize         : 16,
+    paddingVertical  : 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#DDD",
+    marginBottom     : 20,
+    justifyContent   : "center",
+    height           : 50
   },
   button           : {
     backgroundColor: "#3498DB",
