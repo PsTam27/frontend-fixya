@@ -1,5 +1,5 @@
 import { api } from "@/lib/api"
-import { RegisterRequestPayload } from "@/models/sales/payload"
+import { RegisterRequestPayload, UpdateValorRequest } from "@/models/sales/payload"
 import { userFromJson } from "@/models/user/mapper"
 import {
   LoginUserPayload,
@@ -54,6 +54,8 @@ interface AuthContextType {
   getRequestsCliente(status: string): Promise<any>
 
   getSolicitudesTrabajador(status: string): Promise<any>
+
+  proponerValor(payload: UpdateValorRequest): Promise<boolean>
 }
 
 
@@ -132,11 +134,15 @@ useEffect( () => {
                 // Si no hay datos del worker en storage, cargarlos desde la API
                 try {
                   const workerResponse = await api.get( "/worker", {
-                    params: {
-                      user_id: userData.id
-                    }
-                  } )
+                      params: {
+                        ID: userData.id,
+                        limit: 1,
+                        preload: "Certificates"
+                      }
+                    } )
                   const workerData = workerResponse.data.data[0]
+                  console.log("workerData get worker data")
+                  console.log(workerData)
                   if ( workerData ) {
                     await SecureStore.setItemAsync( WORKER_KEY,
                       JSON.stringify( workerData ) )
@@ -145,7 +151,7 @@ useEffect( () => {
                     if (workerData.certificates.length === 0) {
                       router.replace( "/(unregister)/(worker-register)/step2" )
                     } else {
-                      router.replace( "/(maestro)" ) // ← Agregar esta redirección
+                      router.replace( "/(protected)/(worker-tabs)" ) // ← Agregar esta redirección
                     }
                   }
                 } catch (error) {
@@ -192,10 +198,13 @@ useEffect( () => {
         const workerResponse = await api.get( "/worker", {
           params: {
             ID: userData.id,
-            limit: 1
+            limit: 1,
+            preload: "Certificates"
           }
         } )
         const workerData     = workerResponse.data.data[0]
+        console.log("workerData del login")
+        console.log(workerData)
         if ( !workerData ) {
           return false
         }
@@ -239,6 +248,18 @@ useEffect( () => {
       return false
     }
   }
+  const proponerValor = async ( payload: UpdateValorRequest ) => {
+    try {
+      console.log(" funcion auth payload")
+      console.log(payload)
+      const response = await api.post( "/sale/request-value-proposed", payload )
+      return await response.data.data
+    }
+    catch ( e ) {
+      console.error( "Error en update:", e )
+      return false
+    }
+  }
 
   const createRequest = async ( pre_payload: RegisterRequestPayload ) => {
     try {
@@ -274,11 +295,11 @@ useEffect( () => {
     return await response.data.data
   }
 
-  //getSolicitudesTrabajador
-
   const getSolicitudesTrabajador = async (status: string) => {
     const response = await api.get( "/sale/request-trabajador", {
-      params: {"status": status, "preload": "Speciality, Images"}
+      params: {"status": status, "preload": "Speciality, Images",
+        order: "ASC"
+      }
     })
     return await response.data.data
   }
@@ -356,7 +377,8 @@ useEffect( () => {
         hasAccess,
         createRequest,
         getRequestsCliente,
-        getSolicitudesTrabajador
+        getSolicitudesTrabajador,
+        proponerValor
       }
     }>
       { children }

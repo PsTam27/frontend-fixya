@@ -86,3 +86,10 @@ export const updateRequestWorkerSchema = z.object( {
 } )
 
 export type UpdateRequestWorkerPayload = z.infer<typeof updateRequestWorkerSchema>
+
+export const updateValorRequest = z.object( {
+  value_proposed         : z.coerce.number(),
+  request_id      : z.coerce.number().default(0),
+} )
+
+export type UpdateValorRequest = z.infer<typeof updateValorRequest>
