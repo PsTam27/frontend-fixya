@@ -56,6 +56,8 @@ interface AuthContextType {
   getSolicitudesTrabajador(status: string): Promise<any>
 
   proponerValor(payload: UpdateValorRequest): Promise<boolean>
+
+  getValueRequestClient(id :string): Promise<any>
 }
 
 
@@ -285,12 +287,20 @@ useEffect( () => {
       return false
     }
   }
+  
 
   const getRequestsCliente = async ( status: string ) => {
     console.log("status")
     console.log(status)
     const response = await api.get( "/sale/request-cliente", {
       params: {"status": status, "preload": "Speciality, Images"}
+    })
+    return await response.data.data
+  }
+
+  const getValueRequestClient = async ( id: string ) => {
+    const response = await api.get( "/sale/request-value-proposed", {
+      params: {"id": id, "preload": "Request, WorkerDetail"}
     })
     return await response.data.data
   }
@@ -378,7 +388,8 @@ useEffect( () => {
         createRequest,
         getRequestsCliente,
         getSolicitudesTrabajador,
-        proponerValor
+        proponerValor,
+        getValueRequestClient
       }
     }>
       { children }
