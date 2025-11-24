@@ -67,15 +67,6 @@ export const updateRequestSchema = z.object( {
 
 export type UpdateRequestPayload = z.infer<typeof updateRequestSchema>
 
-export const registerRequestWorkerSchema = z.object( {
-  date_start   : z.iso.datetime(),
-  date_finish  : z.iso.datetime(),
-  status_worker: requestStatusTypeSchema,
-  request_id   : z.string()
-} )
-
-export type RegisterRequestWorkerPayload = z.infer<typeof registerRequestWorkerSchema>
-
 export const updateRequestWorkerSchema = z.object( {
   date_start    : z.iso.datetime().nullish(),
   date_finish   : z.iso.datetime().nullish(),
@@ -93,3 +84,12 @@ export const updateValorRequest = z.object( {
 } )
 
 export type UpdateValorRequest = z.infer<typeof updateValorRequest>
+
+export const registerRequestWorkerPayload = z.object( {
+  date_start         : z.iso.datetime().nullish(),
+  date_finish      :   z.iso.datetime().nullish(),
+  request_id: z.coerce.number().default(0),
+  worker_id: z.coerce.number().default(0)
+} )
+
+export type RegisterRequestWorkerPayload = z.infer<typeof registerRequestWorkerPayload>

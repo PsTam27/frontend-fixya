@@ -1,5 +1,5 @@
 import { api } from "@/lib/api"
-import { RegisterRequestPayload, UpdateValorRequest } from "@/models/sales/payload"
+import { RegisterRequestPayload, RegisterRequestWorkerPayload, UpdateValorRequest } from "@/models/sales/payload"
 import { userFromJson } from "@/models/user/mapper"
 import {
   LoginUserPayload,
@@ -54,6 +54,8 @@ interface AuthContextType {
   getRequestsCliente(status: string): Promise<any>
 
   getSolicitudesTrabajador(status: string): Promise<any>
+  setValueStateCliente(status: string): Promise<number>
+  registerWorkerRequest(payload: RegisterRequestWorkerPayload): Promise<number>
 
   proponerValor(payload: UpdateValorRequest): Promise<boolean>
 
@@ -287,6 +289,18 @@ useEffect( () => {
       return false
     }
   }
+
+    const registerWorkerRequest = async ( payload: RegisterRequestWorkerPayload ) => {
+    try {
+      const response = await api.post( "/sale/request-accepted", payload )
+      const status = response.status
+      return status
+    }
+    catch ( e ) {
+      console.error( "Error en update:", e )
+      return 0
+    }
+  }
   
 
   const getRequestsCliente = async ( status: string ) => {
@@ -300,7 +314,7 @@ useEffect( () => {
 
   const getValueRequestClient = async ( id: string ) => {
     const response = await api.get( "/sale/request-value-proposed", {
-      params: {"id": id, "preload": "Request, WorkerDetail"}
+      params: {"id": id, "preload": "Request, WorkerDetail", "status": "activo"}
     })
     return await response.data.data
   }
@@ -312,6 +326,20 @@ useEffect( () => {
       }
     })
     return await response.data.data
+  }
+
+  const setValueStateCliente = async (status: string) => {
+    try{
+    const response = await api.put( "/sale/request-trabajador", {
+      params: {"status": status
+      }
+    })
+    const statusCode = response.status
+    return statusCode
+    } catch (e) {
+      console.log(e)
+      return 0
+    }
   }
 
   const updateWorker = async ( payload: UpdateWorkerDetailPayload ) => {
@@ -389,7 +417,9 @@ useEffect( () => {
         getRequestsCliente,
         getSolicitudesTrabajador,
         proponerValor,
-        getValueRequestClient
+        getValueRequestClient,
+        setValueStateCliente,
+        registerWorkerRequest
       }
     }>
       { children }
