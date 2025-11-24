@@ -1,4 +1,5 @@
 import { useAuth } from "@/hooks/auth_context"
+import { getRelativeTime } from "@/lib/utils"
 import {
   Ionicons
 } from "@expo/vector-icons"
@@ -35,36 +36,16 @@ type Oferta = {
   ends_at: string;
   complexity: string;
   location_text: string;
+  description: string;
+  value: string;
+  estimated_time: string;
+  status: string;
+  imageUrls: string;
+  imageCount: string;
 };
 
 
-const getRelativeTime = (dateString: string): string => {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffInMs = now.getTime() - date.getTime()
-  
-  const diffInSeconds = Math.floor(diffInMs / 1000)
-  const diffInMinutes = Math.floor(diffInSeconds / 60)
-  const diffInHours = Math.floor(diffInMinutes / 60)
-  const diffInDays = Math.floor(diffInHours / 24)
-  const diffInWeeks = Math.floor(diffInDays / 7)
-  
-  if (diffInSeconds < 5) {
-    return 'Ahora mismo'
-  } else if (diffInSeconds < 60) {
-    return `Hace ${diffInSeconds} segundos`
-  } else if (diffInMinutes < 60) {
-    return `Hace ${diffInMinutes} minuto${diffInMinutes > 1 ? 's' : ''}`
-  } else if (diffInHours < 24) {
-    return `Hace ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`
-  } else if (diffInDays < 7) {
-    return `Hace ${diffInDays} día${diffInDays > 1 ? 's' : ''}`
-  } else if (diffInWeeks < 4) {
-    return `Hace ${diffInWeeks} semana${diffInWeeks > 1 ? 's' : ''}`
-  } else {
-    return date.toLocaleDateString('es-CL')
-  }
-}
+
 
 const OfferCard = ( { oferta, router, onAcceptPress }: {
   oferta: Oferta,
@@ -83,9 +64,38 @@ const OfferCard = ( { oferta, router, onAcceptPress }: {
         ? styles.mediaText 
         : styles.altaText
 
+
         
   const ends_at_date = oferta.ends_at.split('T')[0]
   const fecha_publi = getRelativeTime(oferta.created_at.split('T')[0])
+
+  const movingResume = (request: any) => {
+    console.log("request a resumir")
+    console.log(request)
+    const images = request.images
+    console.log("images resumen")
+    console.log(images)
+    console.log("Image map")
+    console.log(images.map((img: { url: any }) => img.url).join(','))
+    console.log(images.length.toString())
+    router.push( {
+      pathname: "/resumen-solicitud-final",
+      params  : {
+        title: request.title,
+        description: request.description,
+        value: request.value.toString(),
+        estimated_time: request.estimated_time.toString(),
+        status: request.status,
+        location_text: request.location_text,
+        ends_at: request.ends_at,
+        complexity: request.complexity,
+        created_at: request.created_at,
+        // Para imágenes, pasar solo URLs o IDs
+        imageUrls: images.map((img: { url: any }) => img.url).join(','), // Convertir array a string
+        imageCount: images.length.toString()
+      }
+    } )
+  }
 
   return (
     <View style={ styles.card }>
@@ -110,8 +120,7 @@ const OfferCard = ( { oferta, router, onAcceptPress }: {
           <Pressable
             style={ styles.buttonSolid } // Botón "Aceptar Trabajo" sólido
             // 👇 4. Llama a la función del componente padre
-            onPress={ () => router.push(
-              `/detalles-trabajo-maestro/${ oferta.id }` ) }
+            onPress={ () => {movingResume(oferta)} }
           >
             <Text style={ styles.buttonTextSolid }>Detalles</Text>
           </Pressable>
@@ -131,6 +140,7 @@ export default function MaestroDashboardScreen() {
   const [modalVisible, setModalVisible] = useState( false )
   const [selectedJob, setSelectedJob]   = useState<Oferta | null>( null )
 
+
   // 👇 6. Funciones para manejar el modal
   const handleOpenAcceptModal = ( oferta: Oferta ) => {
     setSelectedJob( oferta ) // Guarda el trabajo seleccionado
@@ -145,8 +155,6 @@ export default function MaestroDashboardScreen() {
       setLoading(true)
       try {
         const data = await getSolicitudesTrabajador("pendiente")
-        console.log("data")
-        console.log(data)
         setRequests(data)
       } catch (error) {
         console.error('Error loading requests:', error)
@@ -458,12 +466,13 @@ const styles = StyleSheet.create( {
   bajaText: { 
     color: "white", 
     fontSize: 12, 
-    fontWeight: "bold" 
+    fontWeight: "bold",
+    textTransform: 'capitalize'
   },
   bajaBadge: {
     backgroundColor: "#27AE60", // Verde
     borderRadius: 15,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingVertical: 5,
     marginLeft: "auto"
   },
@@ -472,12 +481,13 @@ const styles = StyleSheet.create( {
   mediaText: { 
     color: "white", 
     fontSize: 12, 
-    fontWeight: "bold" 
+    fontWeight: "bold",
+    textTransform: 'capitalize'
   },
   mediaBadge: {
     backgroundColor: "#F39C12", // Naranja
     borderRadius: 15,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingVertical: 5,
     marginLeft: "auto"
   },
@@ -486,12 +496,13 @@ const styles = StyleSheet.create( {
   altaText: { 
     color: "white", 
     fontSize: 12, 
-    fontWeight: "bold" 
+    fontWeight: "bold",
+    textTransform: 'capitalize'
   },
   altaBadge: {
     backgroundColor: "#E74C3C", // Rojo
     borderRadius: 15,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingVertical: 5,
     marginLeft: "auto"
   },

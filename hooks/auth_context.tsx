@@ -79,60 +79,120 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
     return parse.data >= type
   }
 
-  useEffect( () => {
-    const loadAuthData = async () => {
-      try {
-        const storedToken = await SecureStore.getItemAsync( TOKEN_KEY )
+useEffect( () => {
+  const loadAuthData = async () => {
+    try {
+      const storedToken = await SecureStore.getItemAsync( TOKEN_KEY )
 
-        if ( storedToken ) {
-          const decodedToken = jwtDecode( storedToken )
-          // @ts-ignore
-          const expiresAt    = decodedToken.exp * 1000
-          if ( expiresAt < Date.now() ) {
-            console.warn( "Token expirado detectado al cargar." )
-            await SecureStore.deleteItemAsync( TOKEN_KEY )
-            await SecureStore.deleteItemAsync( USER_KEY )
-          }
-          else {
-            setToken( storedToken )
-            api.defaults.headers.common["Authorization"] =
-              `Bearer ${ storedToken }`
-            const storedUser                             = await SecureStore.getItemAsync(
-              USER_KEY )
-            if ( storedUser ) {
-              setUser( JSON.parse( storedUser ) )
+      if ( storedToken ) {
+        const decodedToken = jwtDecode( storedToken )
+        // @ts-ignore
+        const expiresAt    = decodedToken.exp * 1000
+        if ( expiresAt < Date.now() ) {
+          console.warn( "Token expirado detectado al cargar." )
+          await SecureStore.deleteItemAsync( TOKEN_KEY )
+          await SecureStore.deleteItemAsync( USER_KEY )
+          await SecureStore.deleteItemAsync( WORKER_KEY ) // ← Agregar esta línea
+        }
+        else {
+          setToken( storedToken )
+          api.defaults.headers.common["Authorization"] =
+            `Bearer ${ storedToken }`
+          
+          // Cargar usuario
+          const storedUser = await SecureStore.getItemAsync( USER_KEY )
+          console.log("storedUser")
+          console.log(storedUser)
+          if ( storedUser ) {
+            const userData = JSON.parse( storedUser )
+            console.log("userData")
+            console.log(userData)
+            setUser( userData )
+            
+            // Si es worker, cargar también los datos del worker
+            if ( userData.user_type === UserTypeEnum.Worker ) {
+              const storedWorker = await SecureStore.getItemAsync( WORKER_KEY )
+              console.log("storedWorker")
+              console.log(storedWorker)
+              if ( storedWorker ) {
+                const workerData = JSON.parse( storedWorker )
+                console.log("workerData")
+                console.log(workerData)
+                setWorker( workerData )
+                
+                // Redirigir a la vista de maestro si es necesario
+                if (workerData.certificates.length === 0) {
+                  router.replace( "/(unregister)/(worker-register)/step2" )
+                } else {
+                  console.log("Redirigir a worker-tabs/index")
+                  router.replace( "/(protected)/(worker-tabs)" ) // ← Agregar esta redirección
+                }
+              } else {
+
+                // Si no hay datos del worker en storage, cargarlos desde la API
+                try {
+                  const workerResponse = await api.get( "/worker", {
+                    params: {
+                      user_id: userData.id
+                    }
+                  } )
+                  const workerData = workerResponse.data.data[0]
+                  if ( workerData ) {
+                    await SecureStore.setItemAsync( WORKER_KEY,
+                      JSON.stringify( workerData ) )
+                    setWorker( workerData )
+                    
+                    if (workerData.certificates.length === 0) {
+                      router.replace( "/(unregister)/(worker-register)/step2" )
+                    } else {
+                      router.replace( "/(maestro)" ) // ← Agregar esta redirección
+                    }
+                  }
+                } catch (error) {
+                  console.error("Error cargando datos del worker:", error)
+                }
+              }
+            } else {
+              // Si es cliente, redirigir a vista de cliente
+              router.replace( "/(protected)/(client-tabs)" ) // ← Agregar esta redirección
             }
           }
         }
       }
-      catch ( e ) {
-        console.error( "Error cargando auth data:", e )
-        await SecureStore.deleteItemAsync( TOKEN_KEY )
-        await SecureStore.deleteItemAsync( USER_KEY )
-      }
-      finally {
-        setIsLoading( false )
-      }
     }
+    catch ( e ) {
+      console.error( "Error cargando auth data:", e )
+      await SecureStore.deleteItemAsync( TOKEN_KEY )
+      await SecureStore.deleteItemAsync( USER_KEY )
+      await SecureStore.deleteItemAsync( WORKER_KEY ) // ← Agregar esta línea
+    }
+    finally {
+      setIsLoading( false )
+    }
+  }
 
-    loadAuthData()
-  }, [] )
+  loadAuthData()
+}, [] )
   const router = useRouter()
   const login = async ( payload: LoginUserPayload ) => {
     try {
       const response                               = await api.post(
         "/user/login", payload )
-      const { token: newToken, user: user }    = response.data
+      console.log("login respuesta backend response.data.data")
+      console.log(response.data.data)
+      const { token: newToken, user: user }    = response.data.data
       api.defaults.headers.common["Authorization"] = `Bearer ${ newToken }`
       await SecureStore.setItemAsync( TOKEN_KEY, newToken )
       const userData = userFromJson(user)
       await SecureStore.setItemAsync( USER_KEY, JSON.stringify( userData ) )
       setToken( newToken )
       setUser( userData )
+      //TODO Revisar que el login funcione con worker
       if ( userData.user_type === UserTypeEnum.Worker ) {
         const workerResponse = await api.get( "/worker", {
           params: {
-            user_id: userData.id
+            ID: userData.id,
+            limit: 1
           }
         } )
         const workerData     = workerResponse.data.data[0]
@@ -144,7 +204,11 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
         if(workerData.certificates.length === 0){
           router.replace( "/(unregister)/(worker-register)/step2" )
         }
+        router.replace( "/(protected)/(worker-tabs)" )
+      }else{
+        router.replace( "/(protected)/(client-tabs)")
       }
+
       return true
     }
     catch ( e ) {

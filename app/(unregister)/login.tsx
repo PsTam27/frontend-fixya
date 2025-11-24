@@ -1,6 +1,22 @@
-import React, { useState } from "react"
+import { errorColor } from "@/constants/theme"
+import { useAuth } from "@/hooks/auth_context"
 import {
-  Button,
+  LoginUserPayload,
+  loginUserSchema
+} from "@/models/user/payload"
+import {
+  zodResolver
+} from "@hookform/resolvers/zod"
+import {
+  Link,
+  useRouter
+} from "expo-router"
+import React from "react"
+import {
+  Controller,
+  useForm
+} from "react-hook-form"
+import {
   Image,
   Pressable,
   StyleSheet,
@@ -9,24 +25,8 @@ import {
   View
 } from "react-native"
 import {
-  Link
-}                          from "expo-router"
-import {
   SafeAreaView
-}                          from "react-native-safe-area-context"
-import {
-  Controller,
-  useForm
-}                          from "react-hook-form"
-import {
-  zodResolver
-}                          from "@hookform/resolvers/zod"
-import {
-  LoginUserPayload,
-  loginUserSchema
-}                                    from "@/models/user/payload"
-import { errorColor } from "@/constants/theme"
-import { toast } from 'sonner-native';
+} from "react-native-safe-area-context"
 
 export default function LoginScreen() {
   const {
@@ -36,9 +36,15 @@ export default function LoginScreen() {
         }                       = useForm( {
     resolver: zodResolver( loginUserSchema )
   } )
+  const {login} = useAuth()
+  const router           = useRouter()
 
-  const onSubmit = (data : LoginUserPayload) => {
-    console.log( "Intentando iniciar sesión con:", data )
+  const onSubmit = async (data : LoginUserPayload) => {
+    const ok = await login(data)
+    if (ok){
+      router.push( "/(unregister)/(user-register)/success" )
+    }
+
   }
 
   return (

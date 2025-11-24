@@ -1,3 +1,5 @@
+import { getRelativeTime } from "@/lib/utils"
+import { Ionicons } from "@expo/vector-icons"
 import { Image } from "expo-image"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import React from "react"
@@ -18,7 +20,10 @@ export default function ResumenSolicitudFinalScreen() {
           ends_at,
           complexity,
           imageUrls,
-          imageCount
+          imageCount,
+          isWorker,
+          idSolicitud,
+          created_at
         }      = useLocalSearchParams()
 
   const handleFinalizar = () => {
@@ -37,6 +42,9 @@ export default function ResumenSolicitudFinalScreen() {
     router.replace( "/(tabs)/" ) // O volver al inicio de usuario
   }
 
+  const ends_at_date = (ends_at as string).split('T')[0]
+  const fecha_publi = getRelativeTime((created_at as string).split('T')[0])
+
   return (
     <SafeAreaView style={ styles.container }>
       {/* Configura la barra de título con la flecha de atrás */ }
@@ -51,32 +59,43 @@ export default function ResumenSolicitudFinalScreen() {
 
       <ScrollView contentContainerStyle={ styles.scrollContent }>
         {/* Mostramos los datos recibidos */ }
+        { isWorker && <Text
+                      style={ styles.info }>Solicitud N° {idSolicitud}</Text> }
+
         <Text style={ styles.title }>{ title ||
           "Título no especificado" }</Text>
+
+        <Text style={ styles.location }>
+            <Ionicons name="location" size={ 14 } color="#7F8C8D"/>
+            { " " }{ location_text || "Dirección no especificada" }
+        </Text>
+
         <Text style={ styles.info }>
           <Text style={ styles.infoLabel }>Descripción: </Text>
           { description || "Descripción no especificada" }
         </Text>
+        
         <Text style={ styles.info }>
           <Text style={ styles.infoLabel }>Fecha entrega: </Text>
           { ends_at || "Fecha no especificada" }
         </Text>
-        <Text style={ styles.info }>
-          <Text style={ styles.infoLabel }>Dirección: </Text>
-          { location_text || "Dirección no especificada" }
-        </Text>
+
         <Text style={ styles.info }>
           <Text style={ styles.infoLabel }>Estado: </Text>
-          { status || "Pendiente" }
+          <Text style={ styles.capitalizedText } >{ status || "Pendiente" }</Text>
+          
         </Text>
 
         <Text style={ styles.info }>
           <Text style={ styles.infoLabel }>Complejidad Estimada: </Text>
-          { complexity || "No calculado" }
+          <Text style={ styles.capitalizedText }>
+            { complexity || "No calculado" }
+          </Text>
         </Text>
+
         <Text style={ styles.info }>
           <Text style={ styles.infoLabel }>Duración Estimada: </Text>
-          { estimated_time || "No calculado" }
+          { estimated_time || "No calculado" } Horas
         </Text>
 
         <Text style={ styles.info }>
@@ -102,9 +121,9 @@ export default function ResumenSolicitudFinalScreen() {
           </View>
         ) : null}
         {/* Placeholder del Mapa */ }
-        <View style={ styles.mapPlaceholder }>
+        {/* <View style={ styles.mapPlaceholder }>
           <Text style={ styles.mapText }>[Aquí va el componente de Mapa]</Text>
-        </View>
+        </View> */}
 
       </ScrollView>
 
@@ -201,4 +220,12 @@ const styles = StyleSheet.create( {
     height: 250,
     borderRadius: 10,
   },
+  location               : {
+    fontSize    : 14,
+    color       : "#7F8C8D",
+    marginBottom: 20
+  },
+  capitalizedText: {
+  textTransform: 'capitalize'
+}
 } )
