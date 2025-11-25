@@ -42,10 +42,6 @@ export default function LoginScreen() {
 
   const onSubmit = async (data : LoginUserPayload) => {
     const ok = await login(data)
-    if (ok){
-      router.push( "/(unregister)/(user-register)/success" )
-    }
-
   }
 
   return (

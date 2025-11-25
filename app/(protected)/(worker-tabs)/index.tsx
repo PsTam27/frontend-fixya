@@ -90,7 +90,7 @@ const OfferCard = ( { oferta, router, onAcceptPress }: {
         ends_at: request.ends_at,
         complexity: request.complexity,
         created_at: request.created_at,
-        isWorker: true,
+        isWorker: "true",
         idSolicitud: request.id,
         // Para imágenes, pasar solo URLs o IDs
         imageUrls: images.map((img: { url: any }) => img.url).join(','), // Convertir array a string

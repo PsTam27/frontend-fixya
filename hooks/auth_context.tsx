@@ -54,12 +54,13 @@ interface AuthContextType {
   getRequestsCliente(status: string): Promise<any>
 
   getSolicitudesTrabajador(status: string): Promise<any>
-  setValueStateCliente(status: string): Promise<number>
+  setValueStateCliente(status: string, id: number, request_id?: any): Promise<number>
   registerWorkerRequest(payload: RegisterRequestWorkerPayload): Promise<number>
 
   proponerValor(payload: UpdateValorRequest): Promise<boolean>
 
   getValueRequestClient(id :string): Promise<any>
+  getRequestsWorker ( status: string ) : Promise<any>
 }
 
 
@@ -72,6 +73,7 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
     undefined )
   const [token, setToken]         = useState<string | undefined>( undefined )
   const [isLoading, setIsLoading] = useState( true )
+  console.log("crenado autProvider")
 
   const hasAccess = async ( type: UserTypeEnum ): Promise<boolean> => {
     if ( !user ) {
@@ -87,6 +89,7 @@ export const AuthProvider = ( { children }: { children: ReactNode } ) => {
 
 useEffect( () => {
   const loadAuthData = async () => {
+    console.log("loadAuthData")
     try {
       const storedToken = await SecureStore.getItemAsync( TOKEN_KEY )
 
@@ -104,6 +107,8 @@ useEffect( () => {
           setToken( storedToken )
           api.defaults.headers.common["Authorization"] =
             `Bearer ${ storedToken }`
+          console.log("storedToken storedtoken loadAuthData")
+          console.log(storedToken)
           
           // Cargar usuario
           const storedUser = await SecureStore.getItemAsync( USER_KEY )
@@ -198,10 +203,12 @@ useEffect( () => {
       setToken( newToken )
       setUser( userData )
       //TODO Revisar que el login funcione con worker
+      console.log("userData")
+      console.log(userData)
       if ( userData.user_type === UserTypeEnum.Worker ) {
         const workerResponse = await api.get( "/worker", {
           params: {
-            ID: userData.id,
+            id: userData.id,
             limit: 1,
             preload: "Certificates"
           }
@@ -217,6 +224,7 @@ useEffect( () => {
         if(workerData.certificates.length === 0){
           router.replace( "/(unregister)/(worker-register)/step2" )
         }
+        console.log("moviendose a /(protected)/(worker-tabs) ")
         router.replace( "/(protected)/(worker-tabs)" )
       }else{
         router.replace( "/(protected)/(client-tabs)")
@@ -232,11 +240,12 @@ useEffect( () => {
 
   const logout = async () => {
     console.log( "Cerrando sesión..." )
-    delete api.defaults.headers.common["Authorization"]
     await SecureStore.deleteItemAsync( TOKEN_KEY )
     await SecureStore.deleteItemAsync( USER_KEY )
+    await SecureStore.deleteItemAsync(WORKER_KEY);
     setToken( undefined )
     setUser( undefined )
+    delete api.defaults.headers.common["Authorization"]
   }
 
   const update = async ( payload: UpdateUserPayload ) => {
@@ -292,12 +301,14 @@ useEffect( () => {
 
     const registerWorkerRequest = async ( payload: RegisterRequestWorkerPayload ) => {
     try {
+      console.log("payload de registerWorkerRequest")
+      console.log(payload)
       const response = await api.post( "/sale/request-accepted", payload )
       const status = response.status
       return status
     }
     catch ( e ) {
-      console.error( "Error en update:", e )
+      console.error( "Error en registerWorkerRequest:", e )
       return 0
     }
   }
@@ -308,6 +319,13 @@ useEffect( () => {
     console.log(status)
     const response = await api.get( "/sale/request-cliente", {
       params: {"status": status, "preload": "Speciality, Images"}
+    })
+    return await response.data.data
+  }
+
+  const getRequestsWorker = async ( status: string ) => {
+    const response = await api.get( "/sale/worker", {
+      params: {"status": status, "preload": "WorkerDetail, Request"}
     })
     return await response.data.data
   }
@@ -328,11 +346,22 @@ useEffect( () => {
     return await response.data.data
   }
 
-  const setValueStateCliente = async (status: string) => {
+  const setValueStateCliente = async (status: string, id: number, request_id?: any) => {
     try{
-    const response = await api.put( "/sale/request-trabajador", {
-      params: {"status": status
-      }
+    console.log("status dentro del llamado api")
+    console.log(status)
+    const params: any = {
+      "status": status,
+      "id": id
+    }
+    
+    // Agregar request_id solo si existe
+    if (request_id !== undefined && request_id !== null) {
+      params["request_id"] = request_id
+    }
+    
+    const response = await api.put("/sale/request-value-proposed", null, {
+      params: params
     })
     const statusCode = response.status
     return statusCode
@@ -419,7 +448,8 @@ useEffect( () => {
         proponerValor,
         getValueRequestClient,
         setValueStateCliente,
-        registerWorkerRequest
+        registerWorkerRequest,
+        getRequestsWorker
       }
     }>
       { children }

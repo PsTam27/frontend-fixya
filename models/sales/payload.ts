@@ -86,8 +86,6 @@ export const updateValorRequest = z.object( {
 export type UpdateValorRequest = z.infer<typeof updateValorRequest>
 
 export const registerRequestWorkerPayload = z.object( {
-  date_start         : z.iso.datetime().nullish(),
-  date_finish      :   z.iso.datetime().nullish(),
   request_id: z.coerce.number().default(0),
   worker_id: z.coerce.number().default(0)
 } )

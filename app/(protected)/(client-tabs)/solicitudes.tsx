@@ -42,6 +42,8 @@ export default function SolicitudesScreen() {
 
     try {
       const valores = await getValueRequestClient(requestId)
+      console.log("valores")
+      console.log(valores)
       setValoresPropuestos(valores)
       setCurrentRequestId(requestId)
     } catch (error) {
@@ -118,17 +120,20 @@ export default function SolicitudesScreen() {
     })
   }
 
-  const enviarEstadoValor = async (status : string, request_id = 0, worker_id = 0) => {
-    const statusCode = await setValueStateCliente(status)
+  const enviarEstadoValor = async (status : string, id: number, request_id = 0, worker_id = 0) => {
+    
+    const statusCode = await setValueStateCliente(status, id)
+    console.log("statusCode del setValue")
+    console.log(statusCode)
 
-    if (status === 'aceptado' && statusCode === 201) {
+    if (status === 'aceptado' && statusCode === 200) {
       const payload: RegisterRequestWorkerPayload = {
         request_id: request_id,
         worker_id: worker_id,
-        date_finish: null,
-        date_start: null,
       }
-      registerWorkerRequest(payload)
+      await registerWorkerRequest(payload)
+      setRequests(prev => prev.filter((_, i) => i !== request_id))
+      setValoresPropuestos([])
     }
 
   }
@@ -284,7 +289,8 @@ export default function SolicitudesScreen() {
                       <View style={styles.cardButtonsModal}>
                         <Pressable
                           style={[styles.button, styles.buttonOutline]}
-                          onPress={() => { enviarEstadoValor('aceptado', Number(currentRequestId), valor.worker_detail_id) }}
+                          onPress={() => { 
+                            enviarEstadoValor('aceptado',valor.id, Number(currentRequestId),valor.worker_detail_id)}}
                         >
                           <Text style={[styles.buttonText, styles.buttonTextOutline]}>
                             Aceptar
@@ -292,7 +298,9 @@ export default function SolicitudesScreen() {
                         </Pressable>
                         <Pressable
                           style={[styles.button, styles.buttonSolid]}
-                          onPress={() => { enviarEstadoValor('rechazado') }}
+                          onPress={() => { enviarEstadoValor('rechazado',Number(valor.id),0) 
+                            setValoresPropuestos(prev => prev.filter((_, i) => i !== index))
+                          }}
                         >
                           <Text style={styles.buttonText}>Cancelar</Text>
                         </Pressable>

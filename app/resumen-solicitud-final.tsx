@@ -46,7 +46,7 @@ export default function ResumenSolicitudFinalScreen() {
       imageCount
     })
 
-    if (!isWorker) {
+    if (isWorker === "true") {
       router.replace("/(protected)/(client-tabs)")
     }
     router.replace("/(protected)/(worker-tabs)")
@@ -67,14 +67,10 @@ export default function ResumenSolicitudFinalScreen() {
   const [submiting, startSubmitting]        = useState( false )
   
   const onSubmit                            = async ( data: UpdateValorRequest ) => {
-    console.log( "Form Data:", data )
 
     data.request_id = idSolicitud ? Number(idSolicitud) : 0
     startSubmitting( true )
-    console.log(data)
     const result = await proponerValor(data)
-    console.log("result de subir valor propuesto")
-    console.log(result)
     startSubmitting( false )
     if ( !result ) {
       return
@@ -98,10 +94,10 @@ export default function ResumenSolicitudFinalScreen() {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Mostramos los datos recibidos */}
-        {isWorker && <View style={styles.cardHeader}>
+        {isWorker === "true" ? <View style={styles.cardHeader}>
           <Text style={styles.cardDate}>Solicitud N° {idSolicitud}</Text>
           <Text style={styles.cardDuration}>{getRelativeTime((created_at as string).split('T')[0])}</Text>
-        </View>}
+        </View> : <></>}
 
         <Text style={styles.title}>{title ||
           "Título no especificado"}</Text>
@@ -172,7 +168,7 @@ export default function ResumenSolicitudFinalScreen() {
         {/* <View style={ styles.mapPlaceholder }>
           <Text style={ styles.mapText }>[Aquí va el componente de Mapa]</Text>
         </View> */}
-
+        {isWorker === "true" ?
         <Controller
           control={ control }
           name="value_proposed"
@@ -187,13 +183,13 @@ export default function ResumenSolicitudFinalScreen() {
               placeholderTextColor="#999"
             />
           ) }
-                  />
+                  />: <></>}
 
       </ScrollView>
 
       {/* Botón Finalizar fijo abajo */}
 
-      {isWorker ?
+      {isWorker === "true" ?
       
       <View style={styles.footer}>
         <Pressable style={styles.finalizeButton} onPress={handleSubmit( onSubmit )}>
